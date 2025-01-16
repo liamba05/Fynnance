@@ -1,4 +1,10 @@
+# NO REAL CODE IN HERE UNTIL SATURDAY
+
 # Budgeting
+
+### Analyze (Subcategory to analyze user's data for solution)
+
+### Search (Subcategory to search for data for solution)
 
 Data Needed:
 - Plaid bank account holdings accross all accounts
@@ -27,6 +33,7 @@ Example questions:
 - I have $X to spend, what should I buy in terms of my goals?
 
 # General
+#### MEMORY MUST BE IMPLEMENTED
 
 - Whats the market outlook?
 - What are some recent earnings calls?
