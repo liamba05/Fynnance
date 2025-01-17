@@ -15,6 +15,7 @@
 - Logic for deleting accounts and their data on firebase auth and firestore (if we decide to implement that)
 - Logic for receiving plaid public token and using plaid api to get access token, then encrypt and store it in firestore
 - Offering logic/method(strictly for backend use) for easy querying of secure financial info from plaid (so that liam&max can easily integrate that data into there backend prompt engineering logic)
+- Logic for maintaining Google Cloud Secret Manager and adding/getting secrets
 
 
 ## What we need to know / Importance
@@ -38,6 +39,10 @@
   * Getting credit score works the same way as banking info (public token -> access token -> encrypt -> store)
   * NOTE: We will have to use Plaid sandbox for the hackathon which essentially simulates a real user and populates the form automatically with simulated data. For testing and demo purposes this is perfect, we’ll just have to mention when presenting that we’d simply need to upgrade our plaid api for production, but it would work exactly the same other than that.
 - Chatgpt api
+- **Google Cloud Secret Manager**
+  * Used to hold onto all our "secrets" e.g. API keys&Database Credentials(although these can be stored as backend environment variables on deployment), and most importantly the keys to our encrypted data (plaid uid's and anything else that we encrypt)
+  * Pretty easy to set up, doesn't require setup files
+  * We'll make getSecret and setSecret functions for easy use across the backend
 - Live News API
 
 ## Deployment
