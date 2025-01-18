@@ -51,13 +51,13 @@ class APIKeyManager:
             raise
     
     @lru_cache(maxsize=5)  # Cache all API keys including Plaid credentials
-    def get_api_key(self, service: Literal['alpha_vantage', 'rentcast', 'fred', 'p_clientid', 'p_secret']) -> str:
+    def get_api_key(self, service: Literal['alpha_vantage', 'rentcast', 'fred', 'p_clientid', 'p_secret', 'openai']) -> str:
         """
         Retrieve and decrypt an API key from Firebase.
         Uses caching to avoid unnecessary decryption operations.
         
         Args:
-            service: The service to get the API key for ('alpha_vantage', 'rentcast', 'fred', 'p_clientid', 'p_secret')
+            service: The service to get the API key for ('alpha_vantage', 'rentcast', 'fred', 'p_clientid', 'p_secret', 'openai')
             
         Returns:
             str: The decrypted API key
@@ -69,7 +69,8 @@ class APIKeyManager:
                 'rentcast': 'RENTCAST_KEY',
                 'fred': 'FRED_KEY',
                 'p_clientid': 'PLAID_CLIENT_ID',
-                'p_secret': 'PLAID_SECRET'
+                'p_secret': 'PLAID_SECRET',
+                'openai': 'OPENAI_KEY'
             }
             
             # Get encrypted credentials from Firebase
@@ -97,6 +98,48 @@ class APIKeyManager:
             print(f"Error retrieving API key for {service}: {str(e)}")
             raise
 
+    def store_api_key(self, service: str, api_key: str) -> None:
+        """
+        Store and encrypt an API key in Firebase.
+        
+        Args:
+            service: The service name for the API key
+            api_key: The API key to encrypt and store
+            
+        Returns:
+            None
+        """
+        try:
+            # Map service names to Firebase field names
+            firebase_field_map = {
+                'alpha_vantage': 'ALPHA_VANTAGE_KEY',
+                'rentcast': 'RENTCAST_KEY',
+                'fred': 'FRED_KEY',
+                'p_clientid': 'PLAID_CLIENT_ID',
+                'p_secret': 'PLAID_SECRET',
+                'openai': 'OPENAI_KEY'
+            }
+            
+            firebase_field = firebase_field_map.get(service)
+            if not firebase_field:
+                raise ValueError(f"Invalid service: {service}")
+            
+            # Encrypt the API key
+            encrypted_key = self.fernet.encrypt(api_key.encode()).decode()
+            
+            # Store in Firebase
+            creds_ref = self.db.collection('credentials').document('api_keys')
+            creds_ref.set({
+                firebase_field: encrypted_key
+            }, merge=True)
+            
+            # Clear the cache for this service
+            self.get_api_key.cache_clear()
+            
+        except Exception as e:
+            print(f"Error storing API key for {service}: {str(e)}")
+            raise
+
     @staticmethod
     def get_firebase_path():
         return '/Users/liambouayad/Documents/Documents/Sensitive_Data/fynnance-5031a-firebase-adminsdk-9mn1g-87d7537a7c.json'
@@ -105,4 +148,4 @@ if __name__ == "__main__":
     os.environ['GOOGLE_CLOUD_PROJECT'] = '258766016727'
     manager = APIKeyManager()
     
-    print(manager.get_api_key('rentcast'))
+    print(manager.get_api_key('openai'))
