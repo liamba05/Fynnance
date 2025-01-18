@@ -3,12 +3,13 @@ import firebase_admin
 from firebase_admin import credentials, firestore
 from cryptography.fernet import Fernet
 import os
+from EncryptionKeyStorage.API_key_manager import APIKeyManager
 
 def store_encryption_key(project_id: str):
     """Store a single Fernet encryption key in GCP Secret Manager."""
     try:
         # Initialize Firebase Admin SDK
-        cred = credentials.Certificate('/Users/liambouayad/Documents/Documents/Sensitive_Data/fynnance-5031a-firebase-adminsdk-9mn1g-87d7537a7c.json')
+        cred = credentials.Certificate(APIKeyManager.get_firebase_path())
         if not firebase_admin._apps:
             firebase_admin.initialize_app(cred)
         
@@ -55,7 +56,7 @@ def get_encryption_key(project_id: str) -> Fernet:
     """Retrieve the Fernet encryption key from GCP Secret Manager."""
     try:
         # Initialize Firebase Admin SDK
-        cred = credentials.Certificate('/Users/liambouayad/Documents/Documents/Sensitive_Data/fynnance-5031a-firebase-adminsdk-9mn1g-87d7537a7c.json')
+        cred = credentials.Certificate(APIKeyManager.get_firebase_path())
         if not firebase_admin._apps:
             firebase_admin.initialize_app(cred)
         

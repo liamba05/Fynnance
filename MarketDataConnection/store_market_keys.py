@@ -5,12 +5,13 @@ from cryptography.fernet import Fernet
 import hashlib
 import base64
 import os
+from EncryptionKeyStorage.API_key_manager import APIKeyManager
 
 def store_market_api_keys(project_id: str, alpha_vantage_key: str, rentcast_key: str, fred_key: str):
     """Store market data API keys in Google Cloud Secret Manager and Firebase."""
     try:
         # Initialize Firebase
-        cred = credentials.Certificate('/Users/liambouayad/Documents/Documents/Sensitive_Data/fynnance-5031a-firebase-adminsdk-9mn1g-87d7537a7c.json')
+        cred = credentials.Certificate(APIKeyManager.get_firebase_path())
         if not firebase_admin._apps:
             firebase_admin.initialize_app(cred)
         

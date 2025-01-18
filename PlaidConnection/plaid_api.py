@@ -43,6 +43,7 @@ credentials_manager = PlaidCredentialsManager()
 def create_plaid_client():
     """Create a Plaid client using the securely stored credentials."""
     client_id, secret = credentials_manager.get_plaid_credentials()
+    
     configuration = Configuration(
         host=os.getenv('PLAID_ENV', PLAID_ENV),
         api_key={
