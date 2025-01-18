@@ -29,6 +29,7 @@ def execute_function(name, args):
 
 def main():
     user_input = input("Enter your input: ")
+    messages = [{"role": "system", "content": "You are Fynn, an all-around financial analyst for the user's financing, budgeting, and investments. You will provide the user with financial advice and information."}]
     messages = [{"role": "user", "content": user_input}]
     
     # 1) Call the model with your tools
