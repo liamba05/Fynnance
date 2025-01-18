@@ -1,13 +1,10 @@
-
 from openai import OpenAI
-import requests
 import json
-import inspect
 from functions import function_registry 
 
 client = OpenAI(api_key="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")
 
-# Build the tools list from your function registry
+# Build the tools list from function registry
 tools = []
 for func_name, func_def in function_registry.items():
     tools.append(
@@ -17,7 +14,7 @@ for func_name, func_def in function_registry.items():
                 "name": func_name,
                 "description": func_def["description"],
                 "parameters": func_def["parameters"],
-                "strict": True,  # enable strict mode
+                "strict": True,
             },
         }
     )

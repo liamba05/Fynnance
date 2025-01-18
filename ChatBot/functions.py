@@ -2,13 +2,19 @@
 
 import sys
 import os
-
 import requests
 import datetime
 from datetime import timedelta, datetime
 
-api_key = "BIIQSSO5MPS3GBO0"
-fred_key = "dd8530640397b618c799658132f5ff11"
+# add to path so we can import other functions
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+# import the API key manager
+from EncryptionKeyStorage.API_key_manager import APIKeyManager
+os.environ['GOOGLE_CLOUD_PROJECT'] = '258766016727'
+api_key_manager = APIKeyManager()
+
+# ------- FUNCTIONS THAT GPT CAN USE TO GATHER DATA ------
 
 def get_stock_price(symbol: str):
     """
@@ -20,6 +26,7 @@ def get_stock_price(symbol: str):
     Returns:
         dict: Parsed JSON data containing stock information or an error message.
     """
+    api_key = api_key_manager.get_api_key('alpha_vantage')
     url = f"https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol={symbol}&apikey={api_key}"
     print(url)
     try:
@@ -45,6 +52,7 @@ def get_top_gainers_and_losers():
     Returns:
         dict: Parsed JSON data containing top gainers and losers or an error message.
     """
+    api_key = api_key_manager.get_api_key('alpha_vantage')
     url = f'https://www.alphavantage.co/query?function=TOP_GAINERS_LOSERS&apikey=f{api_key}'
     try:
         response = requests.get(url)
@@ -69,6 +77,7 @@ def get_market_news_sentiment(tickers: str = None):
     Returns:
         dict: Parsed JSON data containing news and sentiment information or an error message.
     """
+    api_key = api_key_manager.get_api_key('alpha_vantage')
     # get the time from for 3 days ago in exactly YYYYMMDDTHHMM format
     time_from = (datetime.datetime.now() - timedelta(days=3)).strftime("%Y%m%dT0000")
     url = f'https://www.alphavantage.co/query?function=NEWS_SENTIMENT&tickers={tickers}&time_from={time_from}&apikey={api_key}'
@@ -95,6 +104,7 @@ def get_fred_data(series_id):
     Returns:
         dict: A dictionary containing the series data and metadata.
     """
+    fred_key = api_key_manager.get_api_key('fred')
     base_url = "https://api.stlouisfed.org/fred/series/observations"
     end_date = datetime.today().strftime('%Y-%m-%d')
     # Set the start date (e.g., 5 years before the current date)
