@@ -1,0 +1,149 @@
+import firebase_admin
+from firebase_admin import credentials, firestore
+from typing import Optional, Union
+from datetime import date
+from flask import session
+from EncryptionKeyStorage.API_key_manager import APIKeyManager
+
+class UserDataCollection:
+    _instance = None
+    
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super(UserDataCollection, cls).__new__(cls)
+            cls._instance._initialized = False
+        return cls._instance
+    
+    def __init__(self):
+        if self._initialized:
+            return
+            
+        # Initialize Firebase if not already initialized
+        if not firebase_admin._apps:
+            cred = credentials.Certificate(APIKeyManager.get_firebase_path())
+            firebase_admin.initialize_app(cred)
+        
+        self.db = firestore.client()
+        self._initialized = True
+
+    def _get_current_user_id(self) -> str:
+        """Get the current user's Firebase Auth UID from the session."""
+        if 'firebase_user_id' not in session:
+            raise ValueError("No authenticated Firebase user found in session")
+        return session['firebase_user_id']
+
+    # Required field getters
+    def get_first_name(self) -> str:
+        """Get user's first name."""
+        user_id = self._get_current_user_id()
+        doc = self.db.collection('users').document(user_id).get()
+        if not doc.exists:
+            raise ValueError(f"User {user_id} not found")
+        return doc.get('first_name')
+
+    def get_last_name(self) -> str:
+        """Get user's last name."""
+        user_id = self._get_current_user_id()
+        doc = self.db.collection('users').document(user_id).get()
+        if not doc.exists:
+            raise ValueError(f"User {user_id} not found")
+        return doc.get('last_name')
+
+    def get_email(self) -> str:
+        """Get user's email."""
+        user_id = self._get_current_user_id()
+        doc = self.db.collection('users').document(user_id).get()
+        if not doc.exists:
+            raise ValueError(f"User {user_id} not found")
+        return doc.get('email')
+
+    def get_password(self) -> str:
+        """Get user's hashed password."""
+        user_id = self._get_current_user_id()
+        doc = self.db.collection('users').document(user_id).get()
+        if not doc.exists:
+            raise ValueError(f"User {user_id} not found")
+        return doc.get('password')
+
+    def get_date_of_birth(self) -> date:
+        """Get user's date of birth."""
+        user_id = self._get_current_user_id()
+        doc = self.db.collection('users').document(user_id).get()
+        if not doc.exists:
+            raise ValueError(f"User {user_id} not found")
+        dob = doc.get('date_of_birth')
+        return firestore.SERVER_TIMESTAMP.to_date(dob) if dob else None
+
+    # Optional field getters
+    def get_income(self) -> Union[float, str]:
+        """Get user's income if provided."""
+        user_id = self._get_current_user_id()
+        doc = self.db.collection('users').document(user_id).get()
+        if not doc.exists:
+            raise ValueError(f"User {user_id} not found")
+        income = doc.get('income')
+        return income if income is not None else "Field not present."
+
+    def get_assets(self) -> Union[float, str]:
+        """Get user's assets if provided."""
+        user_id = self._get_current_user_id()
+        doc = self.db.collection('users').document(user_id).get()
+        if not doc.exists:
+            raise ValueError(f"User {user_id} not found")
+        assets = doc.get('assets')
+        return assets if assets is not None else "Field not present."
+
+    def get_zip_code(self) -> Union[str, str]:
+        """Get user's zip code if provided."""
+        user_id = self._get_current_user_id()
+        doc = self.db.collection('users').document(user_id).get()
+        if not doc.exists:
+            raise ValueError(f"User {user_id} not found")
+        zip_code = doc.get('zip_code')
+        return zip_code if zip_code is not None else "Field not present."
+
+    def get_credit_score(self) -> Union[int, str]:
+        """Get user's credit score if provided."""
+        user_id = self._get_current_user_id()
+        doc = self.db.collection('users').document(user_id).get()
+        if not doc.exists:
+            raise ValueError(f"User {user_id} not found")
+        credit_score = doc.get('credit_score')
+        return credit_score if credit_score is not None else "Field not present."
+
+    # Optional field setters
+    def set_income(self, income: float) -> None:
+        """Set user's income."""
+        if income < 0:
+            raise ValueError("Income cannot be negative")
+        user_id = self._get_current_user_id()
+        self.db.collection('users').document(user_id).set({
+            'income': income
+        }, merge=True)
+
+    def set_assets(self, assets: float) -> None:
+        """Set user's assets."""
+        if assets < 0:
+            raise ValueError("Assets cannot be negative")
+        user_id = self._get_current_user_id()
+        self.db.collection('users').document(user_id).set({
+            'assets': assets
+        }, merge=True)
+
+    def set_zip_code(self, zip_code: str) -> None:
+        """Set user's zip code."""
+        if not zip_code.isdigit() or len(zip_code) != 5:
+            raise ValueError("Invalid ZIP code format")
+        user_id = self._get_current_user_id()
+        self.db.collection('users').document(user_id).set({
+            'zip_code': zip_code
+        }, merge=True)
+
+    def set_credit_score(self, credit_score: int) -> None:
+        """Set user's credit score."""
+        if not isinstance(credit_score, int) or credit_score < 300 or credit_score > 850:
+            raise ValueError("Invalid credit score. Must be an integer between 300 and 850")
+        user_id = self._get_current_user_id()
+        self.db.collection('users').document(user_id).set({
+            'credit_score': credit_score
+        }, merge=True)
