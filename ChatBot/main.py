@@ -27,14 +27,22 @@ def execute_function(name, args):
     func = function_registry[name]["function"]
     return func(**args)
 
-def main():
-    user_input = input("Enter your input: ")
-    messages = [{"role": "system", "content": "You are Fynn, an all-around financial analyst for the user's financing, budgeting, and investments. You will provide the user with financial advice and information."}]
-    messages = [{"role": "user", "content": user_input}]
+def initialize_chat():
+    """Return the initial messages object for the start of the chat. """
+    return [{"role": "developer", "content": "You are Fynn, an all-around financial analyst for the user's financing, budgeting, and investments. You will provide the user with financial advice and information. \
+             At any point, if you need more information to make a tools/function call, ask the user and make the call after. Do not make a call early, you can ask the user follow-up questions to get the necessary information.\
+             ONLY MAKE A CALL FOR A FUNCTION THAT EXISTS, do not offer to get data on information that you cannot access or will cause an API error."}]
+
+def get_response(messages):
+    """Get a response from GPT with function calling skills.
+    It uses the most recen user_input in messages as the question.
     
-    # 1) Call the model with your tools
+    Returns: reponse, messages (updated)
+    """
+
+    # 1) Call the model with the tools (functions) availible
     completion = client.chat.completions.create(
-        model="gpt-4o",  # or gpt-4-0613, if you have access
+        model="gpt-4o", 
         messages=messages,
         tools=tools,
     )
@@ -42,11 +50,10 @@ def main():
     # 2) Check if the model decided to call any tools
     tool_calls = completion.choices[0].message.tool_calls
     
+    # if it didn't call any tools, just return the text response
     if not tool_calls:
-        # No function calls => just print the model's text response
-        print(completion.choices[0].message.content)
-        return
-    
+        return completion.choices[0].message.content, messages
+
     # If there are tool calls:
     # Append the entire assistant message (with the function call info)
     # so the model will “see” that it already asked for a function
@@ -73,8 +80,24 @@ def main():
         tools=tools,
     )
     
-    # Finally, print the model’s integrated answer
-    print(completion_2.choices[0].message.content)
+    # Finally, return the model’s integrated answer
+    return completion_2.choices[0].message.content, messages
+
+
+def ask_question(messages, question):
+    """Ask a question to the model and return the response AND the messages object."""
+    messages.append({"role": "user", "content": question})
+    response, messages =  get_response(messages)
+    return response, messages
+
+
+def main():
+    messages = initialize_chat()
+    print("Welcome to Fynn, your financial analyst assistant. Ask me anything about finance, budgeting, and investments.")
+    while True:
+        question = input("You: ")
+        response, messages = ask_question(messages, question)
+        print("Fynn:", response)
 
 if __name__ == "__main__":
     main()
