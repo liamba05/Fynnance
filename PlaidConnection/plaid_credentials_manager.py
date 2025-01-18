@@ -2,10 +2,9 @@ from google.cloud import secretmanager
 import firebase_admin
 from firebase_admin import credentials, firestore
 from cryptography.fernet import Fernet
-import hashlib
-import base64
 import os
 from functools import lru_cache
+from typing import Optional, Tuple
 
 class PlaidCredentialsManager:
     _instance = None
@@ -22,128 +21,178 @@ class PlaidCredentialsManager:
             
         # Initialize Firebase if not already initialized
         if not firebase_admin._apps:
-            cred = credentials.Certificate(os.getenv('FIREBASE_CREDENTIALS_PATH'))
+            cred = credentials.Certificate('/Users/liambouayad/Documents/Documents/Sensitive_Data/fynnance-5031a-firebase-adminsdk-9mn1g-87d7537a7c.json')
             firebase_admin.initialize_app(cred)
         
         self.db = firestore.client()
-        self.secret_client = secretmanager.SecretManagerServiceClient()
-        self.fernet = self._initialize_encryption()
+        self.secret_client = secretmanager.SecretManagerServiceClient(
+            credentials=credentials.Certificate('/Users/liambouayad/Documents/Documents/Sensitive_Data/fynnance-5031a-firebase-adminsdk-9mn1g-87d7537a7c.json').get_credential()
+        )
+        self.fernet = self._get_encryption_fernet()
         self._initialized = True
 
-    def _get_secret(self, secret_name: str) -> str:
-        """Retrieve a secret from Google Cloud Secret Manager."""
+    def _get_encryption_fernet(self) -> Fernet:
+        """Retrieve the Fernet encryption key from Secret Manager."""
         try:
-            name = f"projects/{os.getenv('GOOGLE_CLOUD_PROJECT')}/secrets/{secret_name}/versions/latest"
-            response = self.secret_client.access_secret_version(request={"name": name})
-            return response.payload.data.decode("UTF-8")
+            project_id = os.getenv('GOOGLE_CLOUD_PROJECT', '258766016727')
+            secret_path = f"projects/{project_id}/secrets/ENCRYPTION_FERNET_KEY/versions/latest"
+            
+            response = self.secret_client.access_secret_version(request={"name": secret_path})
+            fernet_key = response.payload.data.decode()
+            
+            return Fernet(fernet_key.encode())
+            
         except Exception as e:
-            print(f"Error retrieving secret {secret_name}: {str(e)}")
-            raise
-
-    def _initialize_encryption(self) -> Fernet:
-        """Initialize Fernet encryption with key from Secret Manager."""
-        try:
-            encryption_key = self._get_secret('PLAID_FERNET_KEY')
-            return Fernet(encryption_key.encode())
-        except Exception as e:
-            print(f"Error initializing encryption: {str(e)}")
-            raise
-
-    def _create_firebase_hash(self, value: str, salt: str) -> str:
-        """Create a Firebase-compatible hash of the value."""
-        key = hashlib.pbkdf2_hmac(
-            'sha256',
-            value.encode(),
-            salt.encode(),
-            100000
-        )
-        return base64.b64encode(key).decode()
-
-    @lru_cache(maxsize=1)
-    def get_plaid_credentials(self) -> tuple:
-        """
-        Retrieve and decrypt Plaid credentials from Firebase.
-        Uses caching to avoid unnecessary decryption operations.
-        """
-        try:
-            # Get encrypted credentials from Firebase
-            creds_doc = self.db.collection('credentials').document('plaid').get()
-            if not creds_doc.exists:
-                raise ValueError("Plaid credentials not found in Firebase")
-            
-            creds_data = creds_doc.to_dict()
-            firebase_hashed_client_id = creds_data.get('client_id')
-            firebase_hashed_secret = creds_data.get('secret')
-            
-            if not firebase_hashed_client_id or not firebase_hashed_secret:
-                raise ValueError("Missing required Plaid credentials")
-
-            # Get Firebase salt from Secret Manager
-            firebase_salt = self._get_secret('PLAID_FIREBASE_SALT')
-            
-            # First layer: Verify Firebase hash and get Fernet-encrypted values
-            fernet_encrypted_client_id = firebase_hashed_client_id
-            fernet_encrypted_secret = firebase_hashed_secret
-            
-            # Second layer: Decrypt with Fernet
-            client_id = self.fernet.decrypt(fernet_encrypted_client_id.encode()).decode()
-            secret = self.fernet.decrypt(fernet_encrypted_secret.encode()).decode()
-            
-            return client_id, secret
-        except Exception as e:
-            print(f"Error decrypting credentials: {str(e)}")
+            print(f"Error retrieving encryption key: {str(e)}")
             raise
 
     def store_user_access_token(self, user_id: str, access_token: str, item_id: str = None) -> None:
         """
-        Store a user's Plaid access token securely in Firebase.
-        The access token is encrypted using the same double-encryption method.
+        Store a user's Plaid access token securely in Firestore.
+        The access token is encrypted using the Fernet key from GCP.
+        
+        Args:
+            user_id: The unique identifier for the user (e.g., Firebase Auth UID)
+            access_token: The Plaid access token to store
+            item_id: Optional Plaid item ID associated with the access token
         """
         try:
-            # First layer: Fernet encryption
+            # Encrypt the access token using Fernet
             encrypted_token = self.fernet.encrypt(access_token.encode()).decode()
             
-            # Second layer: Firebase hash with salt
-            firebase_salt = self._get_secret('PLAID_FIREBASE_SALT')
-            final_token = self._create_firebase_hash(encrypted_token, firebase_salt)
-            
-            # Store in Firebase
+            # Prepare data to store
             data = {
-                'access_token': final_token,
+                'access_token': encrypted_token,
                 'updated_at': firestore.SERVER_TIMESTAMP
             }
             if item_id:
                 data['item_id'] = item_id
-                
-            self.db.collection('users').document(user_id).set(data, merge=True)
+            
+            # Store in Firestore under the user's document
+            user_ref = self.db.collection('users').document(user_id)
+            plaid_data_ref = user_ref.collection('plaid_data').document('access_tokens')
+            
+            # Store the encrypted token and update user metadata
+            batch = self.db.batch()
+            batch.set(plaid_data_ref, data, merge=True)
+            batch.update(user_ref, {
+                'has_plaid_connection': True,
+                'last_plaid_update': firestore.SERVER_TIMESTAMP
+            })
+            batch.commit()
+            
+            print(f"Successfully stored encrypted access token for user '{user_id}'")
             
         except Exception as e:
             print(f"Error storing access token: {str(e)}")
             raise
 
-    def get_user_access_token(self, user_id: str) -> str:
+    def get_user_access_token(self, user_id: str) -> Optional[Tuple[str, str]]:
         """
-        Retrieve and decrypt a user's Plaid access token from Firebase.
+        Retrieve and decrypt a user's Plaid access token from Firestore.
+        
+        Args:
+            user_id: The unique identifier for the user (e.g., Firebase Auth UID)
+            
+        Returns:
+            Optional[Tuple[str, str]]: A tuple of (access_token, item_id) if found, None otherwise
         """
         try:
-            user_doc = self.db.collection('users').document(user_id).get()
-            if not user_doc.exists:
+            # Get the encrypted token from Firestore
+            plaid_data_ref = self.db.collection('users').document(user_id).collection('plaid_data').document('access_tokens')
+            doc = plaid_data_ref.get()
+            
+            if not doc.exists:
+                print(f"No Plaid access token found for user '{user_id}'")
                 return None
-                
-            user_data = user_doc.to_dict()
-            firebase_hashed_token = user_data.get('access_token')
             
-            if not firebase_hashed_token:
+            data = doc.to_dict()
+            encrypted_token = data.get('access_token')
+            item_id = data.get('item_id')
+            
+            if not encrypted_token:
+                print(f"No access token found in Plaid data for user '{user_id}'")
                 return None
-                
-            # First layer: Get Fernet-encrypted value
-            fernet_encrypted_token = firebase_hashed_token
             
-            # Second layer: Decrypt with Fernet
-            access_token = self.fernet.decrypt(fernet_encrypted_token.encode()).decode()
+            # Decrypt the access token using Fernet
+            access_token = self.fernet.decrypt(encrypted_token.encode()).decode()
             
-            return access_token
+            print(f"Successfully retrieved and decrypted access token for user '{user_id}'")
+            
+            return access_token, item_id
             
         except Exception as e:
             print(f"Error retrieving access token: {str(e)}")
-            raise 
+            raise
+
+    def remove_user_access_token(self, user_id: str) -> None:
+        """
+        Remove a user's Plaid access token and related data.
+        
+        Args:
+            user_id: The unique identifier for the user
+        """
+        try:
+            # Get references to the documents
+            user_ref = self.db.collection('users').document(user_id)
+            plaid_data_ref = user_ref.collection('plaid_data').document('access_tokens')
+            
+            # Delete the access token and update user metadata
+            batch = self.db.batch()
+            batch.delete(plaid_data_ref)
+            batch.update(user_ref, {
+                'has_plaid_connection': False,
+                'last_plaid_update': firestore.SERVER_TIMESTAMP
+            })
+            batch.commit()
+            
+            print(f"Successfully removed Plaid access token for user '{user_id}'")
+            
+        except Exception as e:
+            print(f"Error removing access token: {str(e)}")
+            raise
+
+if __name__ == "__main__":
+    # Test the manager with a dummy token
+    PROJECT_ID = "258766016727"
+    os.environ['GOOGLE_CLOUD_PROJECT'] = PROJECT_ID
+    
+    manager = PlaidCredentialsManager()
+    test_user_id = "test_user_123"  # This would normally be a Firebase Auth UID
+    test_token = "access-sandbox-12345"
+    test_item_id = "item-sandbox-12345"
+    
+    print("\nTesting Plaid Credentials Manager:")
+    
+    # First create the user document
+    print("1. Creating test user document...")
+    user_ref = manager.db.collection('users').document(test_user_id)
+    user_ref.set({
+        'created_at': firestore.SERVER_TIMESTAMP,
+        'has_plaid_connection': False
+    })
+    
+    print("2. Storing test access token...")
+    manager.store_user_access_token(test_user_id, test_token, test_item_id)
+    
+    print("\n3. Retrieving test access token...")
+    result = manager.get_user_access_token(test_user_id)
+    if result:
+        retrieved_token, retrieved_item_id = result
+        print(f"Retrieved token: {retrieved_token}")
+        print(f"Retrieved item ID: {retrieved_item_id}")
+        assert retrieved_token == test_token, "Token mismatch!"
+        assert retrieved_item_id == test_item_id, "Item ID mismatch!"
+    
+    print("\n4. Removing test access token...")
+    manager.remove_user_access_token(test_user_id)
+    
+    print("\n5. Verifying removal...")
+    result = manager.get_user_access_token(test_user_id)
+    assert result is None, "Token was not properly removed!"
+    
+    # Clean up test user
+    print("\n6. Cleaning up test user...")
+    user_ref.delete()
+    
+    print("\nAll tests passed successfully!") 
