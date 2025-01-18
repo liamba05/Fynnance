@@ -25,7 +25,9 @@ class APIKeyManager:
             firebase_admin.initialize_app(cred)
         
         self.db = firestore.client()
-        self.secret_client = secretmanager.SecretManagerServiceClient()
+        self.secret_client = secretmanager.SecretManagerServiceClient(
+            credentials=credentials.Certificate('/Users/liambouayad/Documents/Documents/Sensitive_Data/fynnance-5031a-firebase-adminsdk-9mn1g-87d7537a7c.json').get_credential()
+        )
         self.fernet = self._initialize_encryption()
         self._initialized = True
     
@@ -42,41 +44,52 @@ class APIKeyManager:
     def _initialize_encryption(self) -> Fernet:
         """Initialize Fernet encryption with key from Secret Manager."""
         try:
-            encryption_key = self._get_secret('MARKET_DATA_FERNET_KEY')
+            encryption_key = self._get_secret('ENCRYPTION_FERNET_KEY')
             return Fernet(encryption_key.encode())
         except Exception as e:
             print(f"Error initializing encryption: {str(e)}")
             raise
     
-    @lru_cache(maxsize=3)  # Cache the three API keys
-    def get_api_key(self, service: Literal['alpha_vantage', 'rentcast', 'fred']) -> str:
+    @lru_cache(maxsize=5)  # Cache all API keys including Plaid credentials
+    def get_api_key(self, service: Literal['alpha_vantage', 'rentcast', 'fred', 'p_clientid', 'p_secret']) -> str:
         """
         Retrieve and decrypt an API key from Firebase.
         Uses caching to avoid unnecessary decryption operations.
         
         Args:
-            service: The service to get the API key for ('alpha_vantage', 'rentcast', or 'fred')
+            service: The service to get the API key for ('alpha_vantage', 'rentcast', 'fred', 'p_clientid', 'p_secret')
             
         Returns:
             str: The decrypted API key
         """
         try:
+            # Map service names to Firebase field names
+            firebase_field_map = {
+                'alpha_vantage': 'ALPHA_VANTAGE_KEY',
+                'rentcast': 'RENTCAST_KEY',
+                'fred': 'FRED_KEY',
+                'p_clientid': 'PLAID_CLIENT_ID',
+                'p_secret': 'PLAID_SECRET'
+            }
+            
             # Get encrypted credentials from Firebase
-            creds_doc = self.db.collection('credentials').document('market_data').get()
+            creds_doc = self.db.collection('credentials').document('api_keys').get()
             if not creds_doc.exists:
-                raise ValueError("Market data credentials not found in Firebase")
+                raise ValueError("API credentials not found in Firebase")
             
             creds_data = creds_doc.to_dict()
-            firebase_hashed_key = creds_data.get(service)
+            firebase_field = firebase_field_map.get(service)
+            
+            if not firebase_field:
+                raise ValueError(f"Invalid service: {service}")
+                
+            firebase_hashed_key = creds_data.get(firebase_field)
             
             if not firebase_hashed_key:
                 raise ValueError(f"API key for {service} not found")
             
-            # First layer: Get Fernet-encrypted value
-            fernet_encrypted_key = firebase_hashed_key
-            
-            # Second layer: Decrypt with Fernet
-            api_key = self.fernet.decrypt(fernet_encrypted_key.encode()).decode()
+            # Decrypt with Fernet
+            api_key = self.fernet.decrypt(firebase_hashed_key.encode()).decode()
             
             return api_key
             
@@ -89,7 +102,7 @@ if __name__ == "__main__":
     manager = APIKeyManager()
     
     # Quick test of all services
-    for service in ['alpha_vantage', 'rentcast', 'fred']:
+    for service in ['alpha_vantage', 'rentcast', 'fred', 'p_clientid', 'p_secret']:
         try:
             key = manager.get_api_key(service)
             print(f"✅ {service}: {key[:4]}{'*' * (len(key) - 4)}")
