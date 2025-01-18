@@ -17,7 +17,9 @@
 - Offering logic/method(strictly for backend use) for easy querying of secure financial info from plaid (so that liam&max can easily integrate that data into there backend prompt engineering logic)
 - Logic for maintaining Google Cloud Secret Manager and adding/getting secrets
 
-**Proposed backend structure (missing a few thing but gives a good idea)**
+**Proposed backend structure (missing a few thing but gives a good idea)**:
+* Config files will set up any items we need from the respective sdk's (importing the config files will execute them)
+
 backend/  
 ├── app.py                # Main server file  
 ├── firebase_config.py    # Firebase setup  
