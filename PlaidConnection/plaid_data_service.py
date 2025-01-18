@@ -9,7 +9,7 @@ from plaid.model.accounts_get_request import AccountsGetRequest
 from plaid.model.investments_holdings_get_request import InvestmentsHoldingsGetRequest
 from plaid.model.transactions_get_request import TransactionsGetRequest
 from plaid.model.liabilities_get_request import LiabilitiesGetRequest
-from plaid_credentials_manager import PlaidCredentialsManager
+from .plaid_credentials_manager import PlaidCredentialsManager
 from flask import session
 from datetime import datetime, timedelta
 from functools import wraps

@@ -1,3 +1,8 @@
+"""
+ONLY USE FOR THIS SCRIPT IS TO STORE ENCRYPTED MARKET DATA RELATED API KEYS IN FIREBASE
+LAST TIME STORING: 1/18/2025
+"""
+
 from google.cloud import secretmanager
 import firebase_admin
 from firebase_admin import credentials, firestore
