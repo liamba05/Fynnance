@@ -70,3 +70,8 @@ backend/
   * We’ll have to build our frontend and then set it up on render. Again, we can put any handy credentials as Environment variables
   * We can set our custom url for the frontend on render (and we’ll add a few things with our domain registrar so that it communicates to render)
   * Then it should be all good. Free tier should be enough for render
+
+
+# Backburner
+
+- Implement chat pinning
