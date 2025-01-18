@@ -5,6 +5,15 @@ from cryptography.fernet import Fernet
 import os
 from functools import lru_cache
 from typing import Optional, Tuple
+import sys
+from pathlib import Path
+
+# Add the project root to Python path
+project_root = str(Path(__file__).parent.parent)
+if project_root not in sys.path:
+    sys.path.append(project_root)
+
+from EncryptionKeyStorage.API_key_manager import APIKeyManager
 
 class PlaidCredentialsManager:
     _instance = None
@@ -25,25 +34,18 @@ class PlaidCredentialsManager:
             firebase_admin.initialize_app(cred)
         
         self.db = firestore.client()
-        self.secret_client = secretmanager.SecretManagerServiceClient(
-            credentials=credentials.Certificate('/Users/liambouayad/Documents/Documents/Sensitive_Data/fynnance-5031a-firebase-adminsdk-9mn1g-87d7537a7c.json').get_credential()
-        )
-        self.fernet = self._get_encryption_fernet()
+        self.api_key_manager = APIKeyManager()
+        self.fernet = self.api_key_manager.fernet
         self._initialized = True
 
-    def _get_encryption_fernet(self) -> Fernet:
-        """Retrieve the Fernet encryption key from Secret Manager."""
+    def get_plaid_credentials(self) -> Tuple[str, str]:
+        """Get Plaid client ID and secret."""
         try:
-            project_id = os.getenv('GOOGLE_CLOUD_PROJECT', '258766016727')
-            secret_path = f"projects/{project_id}/secrets/ENCRYPTION_FERNET_KEY/versions/latest"
-            
-            response = self.secret_client.access_secret_version(request={"name": secret_path})
-            fernet_key = response.payload.data.decode()
-            
-            return Fernet(fernet_key.encode())
-            
+            client_id = self.api_key_manager.get_api_key('p_clientid')
+            secret = self.api_key_manager.get_api_key('p_secret')
+            return client_id, secret
         except Exception as e:
-            print(f"Error retrieving encryption key: {str(e)}")
+            print(f"Error retrieving Plaid credentials: {str(e)}")
             raise
 
     def store_user_access_token(self, user_id: str, access_token: str, item_id: str = None) -> None:

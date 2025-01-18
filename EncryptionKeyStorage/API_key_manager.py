@@ -21,12 +21,12 @@ class APIKeyManager:
             
         # Initialize Firebase if not already initialized
         if not firebase_admin._apps:
-            cred = credentials.Certificate('/Users/liambouayad/Documents/Documents/Sensitive_Data/fynnance-5031a-firebase-adminsdk-9mn1g-87d7537a7c.json')
+            cred = credentials.Certificate(APIKeyManager.get_firebase_path())
             firebase_admin.initialize_app(cred)
         
         self.db = firestore.client()
         self.secret_client = secretmanager.SecretManagerServiceClient(
-            credentials=credentials.Certificate('/Users/liambouayad/Documents/Documents/Sensitive_Data/fynnance-5031a-firebase-adminsdk-9mn1g-87d7537a7c.json').get_credential()
+            credentials=credentials.Certificate(APIKeyManager.get_firebase_path()).get_credential()
         )
         self.fernet = self._initialize_encryption()
         self._initialized = True
@@ -97,14 +97,12 @@ class APIKeyManager:
             print(f"Error retrieving API key for {service}: {str(e)}")
             raise
 
+    @staticmethod
+    def get_firebase_path():
+        return '/Users/liambouayad/Documents/Documents/Sensitive_Data/fynnance-5031a-firebase-adminsdk-9mn1g-87d7537a7c.json'
+
 if __name__ == "__main__":
     os.environ['GOOGLE_CLOUD_PROJECT'] = '258766016727'
     manager = APIKeyManager()
     
-    # Quick test of all services
-    for service in ['alpha_vantage', 'rentcast', 'fred', 'p_clientid', 'p_secret']:
-        try:
-            key = manager.get_api_key(service)
-            print(f"✅ {service}: {key[:4]}{'*' * (len(key) - 4)}")
-        except Exception as e:
-            print(f"❌ {service}: {str(e)}") 
+    print(manager.get_api_key('rentcast'))
