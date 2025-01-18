@@ -19,7 +19,9 @@
 
 **Proposed backend structure (missing a few thing but gives a good idea)**
 backend/
+
 ├── app.py                # Main server file
+
 ├── firebase_config.py    # Firebase setup
 ├── plaid_config.py       # Plaid setup
 ├── routes/
