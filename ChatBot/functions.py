@@ -5,6 +5,7 @@ import os
 import requests
 import datetime
 from datetime import timedelta, datetime
+from bs4 import BeautifulSoup
 
 # add to path so we can import other functions
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -28,18 +29,14 @@ def get_stock_price(symbol: str):
     """
     api_key = api_key_manager.get_api_key('alpha_vantage')
     url = f"https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol={symbol}&apikey={api_key}"
-    print(url)
     try:
         response = requests.get(url)
         response.raise_for_status()  # Raise HTTPError for bad responses
         data = response.json()
-        print(data)
 
         if "Global Quote" in data:
-            print(data["Global Quote"])
             return data["Global Quote"]
         else:
-            print('error')
             return {"error": "No data found for the given symbol."}
             
     except requests.exceptions.RequestException as e:
@@ -125,6 +122,55 @@ def get_fred_data(series_id):
     else:
         raise Exception(f"Error fetching data from FRED API: {response.status_code} - {response.text}")
     
+def get_top_headlines():
+    """Gets the top news headlines.
+    
+    Parameters:
+        None
+    
+    Returns:
+        dict: A dictionary containing the top news headlines.
+    """
+    api_key = "74b7b8ee3eaf447b97f537794123cf79"
+    url = f"https://newsapi.org/v2/top-headlines?country=us&apiKey={api_key}&pageSize=20"
+
+    try:
+        response = requests.get(url)
+        response.raise_for_status()  # Raise HTTPError for bad responses
+        data = response.json()
+
+        if "status" in data and data["status"] == "ok":
+            return data
+        else:
+            return {"error": "No data found for the given symbol."}
+    except requests.exceptions.RequestException as e:
+         return {"error": str(e)}
+    
+def get_top_news_about(query_word):
+    """Gets the top news headlines about a specific topic.
+    
+    Parameters:
+        query_word (str): The topic to search for in the news.
+    
+    Returns:
+        dict: A dictionary containing the top news headlines about the topic.
+    """
+    api_key = "74b7b8ee3eaf447b97f537794123cf79"
+    url = f"https://newsapi.org/v2/everything?q={query_word}&apiKey={api_key}&pageSize=20"
+
+    try:
+        response = requests.get(url)
+        response.raise_for_status()  # Raise HTTPError for bad responses
+        data = response.json()
+
+        if "status" in data and data["status"] == "ok":
+            return data
+        else:
+            return {"error": "No data found for the given symbol."}
+    except requests.exceptions.RequestException as e:
+         return {"error": str(e)}
+    
+    
 
 function_registry = {
     "get_stock_price": {
@@ -170,6 +216,28 @@ function_registry = {
                 "series_id": {"type": "string", "description": "The FRED series ID (e.g., 'GDP', 'UNRATE', 'FEDFUNDS', etc)."},
             },
             "required": ["series_id"],
+            "additionalProperties": False
+        }
+    },
+    "get_top_headlines": {
+        "function": get_top_headlines,
+        "description": "Fetch the top news headlines.",
+        "parameters": {
+            "type": "object",
+            "properties": {},
+            "required": [],
+            "additionalProperties": False
+        }
+    },
+    "get_top_news_about": {
+        "function": get_top_news_about,
+        "description": "Fetch the top news headlines about a specific topic.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query_word": {"type": "string", "description": "The topic to search for in the news ('market' or 'trump' or anything like that for example)."},
+            },
+            "required": ["query_word"],
             "additionalProperties": False
         }
     },
