@@ -18,20 +18,18 @@
 - Logic for maintaining Google Cloud Secret Manager and adding/getting secrets
 
 **Proposed backend structure (missing a few thing but gives a good idea)**
-backend/
-
-├── app.py                # Main server file
-
-├── firebase_config.py    # Firebase setup
-├── plaid_config.py       # Plaid setup
-├── routes/
-│   ├── __init__.py
-│   ├── user_routes.py    # Routes for Firebase
-│   ├── plaid_routes.py   # Routes for Plaid
-├── utils/
-│   ├── database.py       # Helper functions for database operations
-│   ├── encrypt.py        # Helper functions for encryption
-├── requirements.txt      # Python dependencies
+backend/  
+├── app.py                # Main server file  
+├── firebase_config.py    # Firebase setup  
+├── plaid_config.py       # Plaid setup  
+├── routes/  
+│   ├── __init__.py  
+│   ├── user_routes.py    # Routes for Firebase  
+│   ├── plaid_routes.py   # Routes for Plaid  
+├── utils/  
+│   ├── database.py       # Helper functions for database operations  
+│   ├── encrypt.py        # Helper functions for encryption  
+├── requirements.txt      # Python dependencies  
 
 
 ## What we need to know / Importance
