@@ -147,5 +147,3 @@ class APIKeyManager:
 if __name__ == "__main__":
     os.environ['GOOGLE_CLOUD_PROJECT'] = '258766016727'
     manager = APIKeyManager()
-    
-    print(manager.get_api_key('openai'))

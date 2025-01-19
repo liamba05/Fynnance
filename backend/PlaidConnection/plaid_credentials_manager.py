@@ -157,8 +157,9 @@ class PlaidCredentialsManager:
             print(f"Error removing access token: {str(e)}")
             raise
 
-    def create_plaid_client(self, client_id: str, secret: str) -> plaid_api.PlaidApi:
+    def create_plaid_client(self) -> plaid_api.PlaidApi:
         """Create a Plaid API client with the given credentials."""
+        client_id, secret = self.get_plaid_credentials()
         configuration = Configuration(
             host='https://sandbox.plaid.com',
             api_key={

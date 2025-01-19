@@ -107,7 +107,9 @@ class PlaidService:
         """Retrieve liability data including credit cards, student loans, and mortgages."""
         try:
             request = LiabilitiesGetRequest(access_token=access_token)
+            print("printing request: ", request)
             response = self.client.liabilities_get(request)
+            print("printing response: ", response)
             return {
                 'accounts': response['accounts'],
                 'liabilities': response['liabilities']
@@ -315,4 +317,16 @@ def test_plaid_integration():
         return False
 
 if __name__ == '__main__':
-    test_plaid_integration()
+        plaid = PlaidService()
+        
+        print("1. Testing link token creation...")
+        link_token = plaid.create_link_token("test-user-id")
+        print(f"Link token created: {link_token[:40]}...")
+
+        print("\n2. Getting access token using sandbox mode...")
+        access_token = plaid.get_access_token()
+        print(f"Access token received: {access_token[:40]}...")
+
+        print("\n3. Retrieving liability information...")
+        liabilities_response = plaid.get_liabilities(access_token)
+        print(liabilities_response)

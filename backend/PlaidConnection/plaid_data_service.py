@@ -11,7 +11,7 @@ from plaid.model.accounts_get_request import AccountsGetRequest
 from plaid.model.investments_holdings_get_request import InvestmentsHoldingsGetRequest
 from plaid.model.transactions_get_request import TransactionsGetRequest
 from plaid.model.liabilities_get_request import LiabilitiesGetRequest
-from .plaid_credentials_manager import PlaidCredentialsManager
+from plaid_credentials_manager import PlaidCredentialsManager
 from flask import session
 from datetime import datetime, timedelta, date
 from functools import wraps
@@ -21,83 +21,6 @@ from collections import defaultdict
 
 # Initialize the credentials manager (Singleton)
 credentials_manager = PlaidCredentialsManager()
-
-def _calculate_loan_predictions(loan: Dict[str, Any]) -> Optional[Dict[str, Any]]:
-    """
-    Calculate loan payoff predictions and scenarios.
-    
-    Args:
-        loan: Dictionary containing loan details with at least:
-             - current_balance
-             - interest_rate
-             - minimum_payment
-    
-    Returns:
-        Dictionary containing payoff predictions and scenarios, or None if required data is missing
-    """
-    current_balance = loan.get('current_balance')
-    interest_rate = loan.get('interest_rate')
-    minimum_payment = loan.get('minimum_payment')
-    
-    if not all([current_balance, interest_rate, minimum_payment]):
-        return None
-    
-    try:
-        # Calculate amortization schedule
-        monthly_rate = interest_rate / 12 / 100
-        
-        # Handle edge cases where the minimum payment might be too low
-        payment_to_interest = minimum_payment / (current_balance * monthly_rate)
-        if payment_to_interest <= 1:
-            return {
-                'error': 'Minimum payment too low to pay off loan',
-                'minimum_required': round(current_balance * monthly_rate + 100, 2)  # Add buffer for principal
-            }
-        
-        # Calculate remaining payments
-        remaining_payments = np.log(minimum_payment / (minimum_payment - current_balance * monthly_rate)) / np.log(1 + monthly_rate)
-        remaining_payments = int(np.ceil(remaining_payments))
-        
-        total_to_pay = minimum_payment * remaining_payments
-        total_interest = total_to_pay - current_balance
-        
-        # Calculate accelerated payoff scenarios
-        accelerated_scenarios = []
-        for additional_amount in [100, 200, 500]:
-            new_payment = minimum_payment + additional_amount
-            new_remaining_payments = np.log(new_payment / (new_payment - current_balance * monthly_rate)) / np.log(1 + monthly_rate)
-            new_remaining_payments = int(np.ceil(new_remaining_payments))
-            
-            new_total = new_payment * new_remaining_payments
-            interest_savings = total_to_pay - new_total
-            
-            accelerated_scenarios.append({
-                'additional_monthly': additional_amount,
-                'new_payment': new_payment,
-                'new_payoff_date': (datetime.now() + timedelta(days=30 * new_remaining_payments)).date().isoformat(),
-                'months_saved': remaining_payments - new_remaining_payments,
-                'interest_savings': interest_savings,
-                'total_to_pay': new_total
-            })
-        
-        return {
-            'total_to_pay': total_to_pay,
-            'total_interest': total_interest,
-            'payoff_date': (datetime.now() + timedelta(days=30 * remaining_payments)).date().isoformat(),
-            'monthly_payment': minimum_payment,
-            'remaining_payments': remaining_payments,
-            'monthly_interest': current_balance * monthly_rate,
-            'monthly_principal': minimum_payment - (current_balance * monthly_rate),
-            'accelerated_payoff': accelerated_scenarios
-        }
-        
-    except Exception as e:
-        return {
-            'error': f'Error calculating predictions: {str(e)}',
-            'current_balance': current_balance,
-            'interest_rate': interest_rate,
-            'minimum_payment': minimum_payment
-        }
 
 def _analyze_recurring_transactions(transactions: List[Dict[str, Any]]) -> Dict[str, Any]:
     """
@@ -257,8 +180,7 @@ def get_plaid_data(func):
             
             # Get Plaid client if not provided
             if 'plaid_client' not in kwargs:
-                client_id, secret = credentials_manager.get_plaid_credentials()
-                kwargs['plaid_client'] = credentials_manager.create_plaid_client(client_id, secret)
+                kwargs['plaid_client'] = credentials_manager.create_plaid_client()
             
             # Call the actual function with the prepared data
             return func(*args, **kwargs)
@@ -402,81 +324,136 @@ def get_recurring_payments(
     except Exception as e:
         raise Exception(f"Error analyzing recurring payments: {str(e)}")
 
+def format_liabilities(raw_data: Dict[str, Any]) -> Dict[str, Any]:
+    """Format liability data for display."""
+    if 'error' in raw_data:
+        return raw_data
+    
+    response = {}
+    
+    liabilities = raw_data['liabilities']
+    if 'credit' in liabilities:
+        credit_responses = []
+        credit_accounts = [acc for acc in raw_data['accounts'] 
+                                 if acc['type'] == 'credit']
+        for credit in liabilities['credit']:
+            subresponse = {}
+            account = next((acc for acc in credit_accounts 
+                                  if acc['account_id'] == credit['account_id']), None)
+            if account:
+                subresponse['name'] = account['name']
+            else:
+                subresponse["ID"] = account['account_id']
+            subresponse['last_statement_balance'] = f"{credit['last_statement_balance']:,.2f}"
+            if 'last_payment_amount' in credit:
+                subresponse['last_payment_amount'] = f"{credit['last_payment_amount']:,.2f}"
+            if 'minimum_payment_amount' in credit:
+                subresponse['minimum_payment_amount'] = f"{credit['minimum_payment_amount']:,.2f}"
+            if 'is_overdue' in credit:
+                subresponse['is_overdue'] = credit['is_overdue']
+
+            purchase_apr = next((apr for apr in credit['aprs'] 
+                    if apr['apr_type'] == 'purchase_apr'), None)
+            
+            if purchase_apr:
+                subresponse['purchase_apr'] = f"{purchase_apr['apr_percentage']}%"
+                subresponse['balance_subject_to_apr'] = f"{purchase_apr['balance_subject_to_apr']:,.2f}"
+            credit_responses.append(subresponse)
+    else:
+        credit_responses = [{'name': "No Credit Accounts"}]
+    response['credit_cards'] = credit_responses
+
+    if 'student' in liabilities:
+        student_responses = []
+        for loan in liabilities['student']:
+            subresponse = {}
+            account = next((acc for acc in raw_data['accounts'] 
+                                  if acc['account_id'] == loan['account_id']), None)
+            account_name = account['name'] if account else loan['account_id']
+            subresponse['name'] = account_name
+            subresponse['last_statement_balance'] = f"{loan['last_statement_balance']:,.2f}"
+            if 'last_payment_amount' in loan:
+                subresponse['last_payment_amount'] = f"{loan['last_payment_amount']:,.2f}"
+            if 'minimum_payment_amount' in loan:
+                subresponse['minimum_payment_amount'] = f"{loan['minimum_payment_amount']:,.2f}"
+            if 'loan_status' in loan:
+                subresponse['loan_status'] = loan['loan_status']['type']
+            if 'interest_rate_percentage' in loan:
+                subresponse['interest_rate_percentage'] = f"{loan['interest_rate_percentage']}%"
+                rate = loan['interest_rate_percentage']
+            if 'expected_payoff_date' in loan:
+                subresponse['expected_payoff_date'] = loan['expected_payoff_date']
+            if 'origination_principal_amount' in loan:
+                subresponse['origination_principal_amount'] = f"{loan['origination_principal_amount']:,.2f}"
+                if rate and 'expected_payoff_date' in loan and 'origination_date' in loan:
+                    years = (loan['expected_payoff_date'] - loan['origination_date']).days / 365
+                    total = loan['origination_principal_amount'] * (1 + (rate/100 * years))
+                    subresponse['total_to_pay'] = f"{total:,.2f}"
+            student_responses.append(subresponse)
+    else:
+        student_responses = [{'name': "No Student Loans"}]
+    response['student_loans'] = student_responses
+
+    if 'mortgage' in liabilities:
+        liabilities['mortgage'][0]['account_number'] = "FYOU"
+        mortgage_responses = []
+        for mortgage in liabilities['mortgage']:
+            subresponse = {}
+            account = next((acc for acc in raw_data['accounts'] 
+                                  if acc['account_id'] == mortgage['account_id']), None)
+            account_name = account['name'] if account else mortgage['account_id']
+            subresponse['name'] = account_name
+            if 'outstanding_principal_balance' in mortgage:
+                subresponse['outstanding_principal_balance'] = f"{mortgage['outstanding_principal_balance']:,.2f}"
+            if 'last_payment_amount' in mortgage:
+                subresponse['last_payment_amount'] = f"{mortgage['last_payment_amount']:,.2f}"
+            if 'last_payment_date' in mortgage:
+                subresponse['last_payment_date'] = mortgage['last_payment_date']
+            if 'loan_term' in mortgage:
+                subresponse['loan_term'] = mortgage['loan_term']
+            if 'interest_rate' in mortgage and 'percentage' in mortgage['interest_rate']:
+                rate = mortgage['interest_rate']['percentage']
+                subresponse['interest_rate'] = f"{rate}%"
+                if 'origination_principal_amount' in mortgage:
+                    principal = mortgage['origination_principal_amount']
+                    subresponse['original_principal'] = f"{principal:,.2f}"
+                    if rate and 'loan_term' in mortgage:
+                        years = float(mortgage['loan_term'].split()[0])
+                        monthly_rate = (rate/100) / 12
+                        num_payments = years * 12
+                        monthly_payment = principal * (monthly_rate * (1 + monthly_rate)**num_payments) / ((1 + monthly_rate)**num_payments - 1)
+                        total = monthly_payment * num_payments
+                        subresponse['total_to_pay'] = f"{total:,.2f}"
+                        subresponse['monthly_payment'] = f"{monthly_payment:,.2f}"
+            mortgage_responses.append(subresponse)
+    else:
+        mortgage_responses = [{'name': "No Mortgages"}]
+    response['mortgages'] = mortgage_responses
+    return response
+
 @get_plaid_data
 def get_liabilities(plaid_client: plaid_api.PlaidApi, access_token: str) -> Dict[str, Any]:
     """Get liability data including credit cards, student loans, and mortgages."""
     try:
         request = LiabilitiesGetRequest(access_token=access_token)
         response = plaid_client.liabilities_get(request)
-        raw_data = response.to_dict()
+        print("Printing response: ", response)
         
-        result = {
-            'credit_cards': [],
-            'student_loans': [],
-            'mortgages': []
-        }
-        
-        # Format credit cards
-        if 'liabilities' in raw_data and 'credit' in raw_data['liabilities']:
-            for credit in raw_data['liabilities']['credit']:
-                card_data = {
-                    'balance': credit.get('last_statement_balance', 0),
-                    'last_payment': credit.get('last_payment_amount', 0),
-                    'minimum_payment': credit.get('minimum_payment_amount', 0),
-                    'due_date': credit.get('next_payment_due_date'),
-                    'is_overdue': credit.get('is_overdue', False)
-                }
-                
-                # Get APR if available
-                aprs = credit.get('aprs', [])
-                purchase_apr = next((apr for apr in aprs if apr['apr_type'] == 'purchase_apr'), None)
-                if purchase_apr:
-                    card_data['apr'] = purchase_apr['apr_percentage']
-                else:
-                    card_data['apr'] = 0
-                    
-                result['credit_cards'].append(card_data)
-        
-        # Format student loans
-        if 'liabilities' in raw_data and 'student' in raw_data['liabilities']:
-            for loan in raw_data['liabilities']['student']:
-                loan_data = {
-                    'balance': loan.get('outstanding_principal_balance', 0),
-                    'last_payment': loan.get('last_payment_amount', 0),
-                    'minimum_payment': loan.get('minimum_payment_amount', 0),
-                    'interest_rate': loan.get('interest_rate_percentage', 0),
-                    'loan_term': loan.get('loan_term', ''),
-                    'origination_date': loan.get('origination_date')
-                }
-                result['student_loans'].append(loan_data)
-        
-        # Format mortgages
-        if 'liabilities' in raw_data and 'mortgage' in raw_data['liabilities']:
-            for mortgage in raw_data['liabilities']['mortgage']:
-                mortgage_data = {
-                    'balance': mortgage.get('outstanding_principal_balance', 0),
-                    'last_payment': mortgage.get('last_payment_amount', 0),
-                    'interest_rate': mortgage.get('interest_rate', {}).get('percentage', 0),
-                    'loan_term': mortgage.get('loan_term', ''),
-                    'origination_date': mortgage.get('origination_date')
-                }
-                result['mortgages'].append(mortgage_data)
-        
-        return result
+        return format_liabilities({
+                'accounts': response['accounts'],
+                'liabilities': response['liabilities']
+            })
         
     except Exception as e:
-        if 'NO_LIABILITY_ACCOUNTS' in str(e):
-            return {
-                'credit_cards': [],
-                'student_loans': [],
-                'mortgages': [],
-                'message': 'No liability accounts found for this user.'
-            }
+        if hasattr(e, 'body') and isinstance(e.body, dict):
+            error_message = e.body.get('error_message', str(e))
+        else:
+            error_message = str(e)
         return {
-            'credit_cards': [],
-            'student_loans': [],
-            'mortgages': [],
-            'error': str(e)
+            'error': 'NO_LIABILITY_ACCOUNTS',
+            'message': 'No liability accounts found for this user.',
+            'true_message': error_message,
+            'err': e
         }
 
 @get_plaid_data

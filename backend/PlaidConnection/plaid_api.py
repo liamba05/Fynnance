@@ -66,53 +66,6 @@ if not firebase_admin._apps:
 # Initialize the credentials manager (Singleton)
 credentials_manager = PlaidCredentialsManager()
 
-def create_plaid_client():
-    """Create a Plaid client using the securely stored credentials."""
-    try:
-        client_id, secret = credentials_manager.get_plaid_credentials()
-        
-        if not client_id or not secret:
-            app.logger.error("Missing Plaid credentials")
-            raise ValueError("Plaid credentials not found")
-            
-        app.logger.info(f"Creating Plaid client with environment: {PLAID_ENV}")
-        
-        # Create configuration using the imported Configuration class
-        configuration = Configuration(
-            host=PLAID_ENV,
-            api_key={
-                'clientId': client_id,
-                'secret': secret
-            }
-        )
-
-        # Create API client using the imported ApiClient class
-        api_client = ApiClient(configuration)
-        
-        # Create and return PlaidApi instance
-        client = plaid_api.PlaidApi(api_client)
-        
-        # Test the client with a simple API call
-        try:
-            request = {
-                'count': 1,
-                'offset': 0,
-                'country_codes': ['US']  # Add required country_codes parameter
-            }
-            response = client.institutions_get(request)
-            app.logger.info("Plaid client created and verified successfully")
-            return client
-            
-        except Exception as e:
-            app.logger.error(f"Failed to verify Plaid client: {str(e)}")
-            if hasattr(e, 'body'):
-                app.logger.error(f"Plaid API error details: {e.body}")
-            raise ValueError(f"Failed to verify Plaid client: {str(e)}")
-        
-    except Exception as e:
-        app.logger.error(f"Error creating Plaid client: {str(e)}")
-        raise
-
 def require_auth(f):
     """Decorator to require Firebase authentication."""
     @wraps(f)
@@ -144,7 +97,7 @@ def create_link_token():
             return jsonify({'error': 'User not authenticated'}), 401
 
         app.logger.info(f"Creating link token for user: {user_id}")
-        plaid_client = create_plaid_client()
+        plaid_client = credentials_manager.create_plaid_client()
         
         # Create the Link token request with account filters
         request_data = LinkTokenCreateRequest(
@@ -201,7 +154,7 @@ def exchange_public_token():
         if not public_token:
             return jsonify({'error': 'Public token is required'}), 400
             
-        plaid_client = create_plaid_client()
+        plaid_client = credentials_manager.create_plaid_client()
         
         try:
             # Exchange the public token for an access token

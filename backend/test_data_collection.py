@@ -15,7 +15,7 @@ class TestDataCollection(unittest.TestCase):
         self.client = self.app.test_client()
         self.ctx = self.app.test_request_context()
         self.ctx.push()
-        session['firebase_user_id'] = "VHyDzK33uNXu5iksYKHCYDnbKzz2"
+        session['firebase_user_id'] = "gzygMSxt67eTdVBiNOym6p4dcIn2"
         
         # Initialize test instances
         self.user_data = UserDataCollection()
@@ -58,21 +58,32 @@ class TestDataCollection(unittest.TestCase):
         print("\n=== Testing EstateDataService Methods ===")
         
         # Test market data methods
-        self.safe_call("EstateDataService.get_market_stats", 
-                      self.estate_data.get_market_stats, "residential")
+        print("\n=== Testing EstateDataService Methods ===\n")
         
-        # Test property listing methods
-        self.safe_call("EstateDataService.get_rental_listings", 
-                      self.estate_data.get_rental_listings, max_price=2000)
-        self.safe_call("EstateDataService.get_property_listings", 
-                      self.estate_data.get_property_listings, max_price=300000)
+        print("--- Testing: EstateDataService.get_market_stats ---")
+        result = self.estate_data.get_market_stats()
+        print("Result for EstateDataService.get_market_stats:")
+        print(result)
         
-        # Test analysis methods
-        self.safe_call("EstateDataService.analyze_investment_potential",
-                      self.estate_data.analyze_investment_potential,
-                      property_price=250000, expected_rent=1800)
-        self.safe_call("EstateDataService.get_affordability_analysis", 
-                      self.estate_data.get_affordability_analysis)
+        print("\n--- Testing: EstateDataService.get_rental_listings (income-based) ---")
+        rental_result = self.estate_data.get_rental_listings(min_beds=2)  # No max_price to test income-based filtering
+        print("Result for EstateDataService.get_rental_listings (income-based):")
+        print(rental_result)
+        
+        print("\n--- Testing: EstateDataService.get_property_listings (income-based) ---")
+        property_result = self.estate_data.get_property_listings(min_beds=2)  # No max_price to test income-based filtering
+        print("Result for EstateDataService.get_property_listings (income-based):")
+        print(property_result)
+        
+        print("\n--- Testing: EstateDataService.analyze_investment_potential ---")
+        investment_result = self.estate_data.analyze_investment_potential(1000000, 4000)
+        print("Result for EstateDataService.analyze_investment_potential:")
+        print(investment_result)
+        
+        print("\n--- Testing: EstateDataService.get_affordability_analysis ---")
+        affordability_result = self.estate_data.get_affordability_analysis()
+        print("Result for EstateDataService.get_affordability_analysis:")
+        print(affordability_result)
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

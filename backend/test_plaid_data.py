@@ -9,10 +9,9 @@ import os
 from datetime import datetime, timedelta
 from flask import Flask, session
 import json
-from pprint import pprint
 
-# Add the backend directory to the Python path
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+# Update the path addition to point to the correct directory
+sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'PlaidConnection'))
 
 from PlaidConnection.plaid_data_service import (
     get_investment_holdings,
@@ -22,14 +21,6 @@ from PlaidConnection.plaid_data_service import (
     get_user_financial_profile
 )
 from PlaidConnection.plaid_credentials_manager import PlaidCredentialsManager
-
-def print_schema(title: str, data: dict) -> None:
-    """Helper function to print JSON schemas in a readable format."""
-    print("\n" + "="*80)
-    print(f"{title} Schema:")
-    print("="*80)
-    pprint(data, indent=2, width=80)
-    print("="*80 + "\n")
 
 class TestPlaidDataCollection(unittest.TestCase):
     def setUp(self):
@@ -43,14 +34,13 @@ class TestPlaidDataCollection(unittest.TestCase):
         self.request_context.push()
         
         # Set up the session with a real user ID
-        session['firebase_user_id'] = 'xEdRMQ3IdQOrR29g4gsddIRt1V23'
+        session['firebase_user_id'] = 'gzygMSxt67eTdVBiNOym6p4dcIn2'
         
         # Get credentials manager
         self.credentials_manager = PlaidCredentialsManager()
         
         # Get Plaid client and access token
-        client_id, secret = self.credentials_manager.get_plaid_credentials()
-        self.plaid_client = self.credentials_manager.create_plaid_client(client_id, secret)
+        self.plaid_client = self.credentials_manager.create_plaid_client()
         
         # Get access token for the test user
         result = self.credentials_manager.get_user_access_token(session['firebase_user_id'])
@@ -66,7 +56,6 @@ class TestPlaidDataCollection(unittest.TestCase):
     def test_investment_holdings(self):
         """Test investment holdings data retrieval"""
         result = get_investment_holdings(plaid_client=self.plaid_client)
-        print_schema("Investment Holdings", result)
         self.assertIsInstance(result, dict)
         self.assertIn('accounts', result)
         self.assertIn('holdings', result)
@@ -74,7 +63,6 @@ class TestPlaidDataCollection(unittest.TestCase):
     def test_account_balances(self):
         """Test account balances data retrieval"""
         result = get_account_balances(plaid_client=self.plaid_client)
-        print_schema("Account Balances", result)
         self.assertIsInstance(result, list)
         if result:
             self.assertIn('name', result[0])
@@ -88,7 +76,6 @@ class TestPlaidDataCollection(unittest.TestCase):
             start_date=(datetime.now() - timedelta(days=30)).date(),
             end_date=datetime.now().date()
         )
-        print_schema("Transactions", result)
         self.assertIsInstance(result, list)
         if result:
             self.assertIn('name', result[0])
@@ -97,7 +84,6 @@ class TestPlaidDataCollection(unittest.TestCase):
     def test_liabilities(self):
         """Test all liabilities data retrieval"""
         result = get_liabilities(plaid_client=self.plaid_client)
-        print_schema("Liabilities", result)
         self.assertIsInstance(result, dict)
         self.assertIn('credit_cards', result)
         self.assertIn('student_loans', result)
@@ -109,7 +95,6 @@ class TestPlaidDataCollection(unittest.TestCase):
             plaid_client=self.plaid_client,
             transactions_days=30
         )
-        print_schema("User Financial Profile", result)
         self.assertIsInstance(result, dict)
         self.assertIn('accounts', result)
         self.assertIn('balances', result)
