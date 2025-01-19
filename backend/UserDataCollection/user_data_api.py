@@ -23,7 +23,7 @@ app.secret_key = os.urandom(24)
 
 # Configure CORS
 CORS(app, 
-     origins=['http://localhost:8000'],
+     origins=['http://localhost:5173'],
      supports_credentials=True,
      allow_headers=['Content-Type', 'Authorization'],
      methods=['GET', 'POST', 'OPTIONS'],
@@ -39,7 +39,7 @@ app.config.update(
 
 # Constants for Plaid
 PLAID_ENV = 'https://sandbox.plaid.com'
-PLAID_REDIRECT_URI = 'https://localhost:8000'
+PLAID_REDIRECT_URI = 'https://localhost:5173'
 FIREBASE_PROJECT_ID = 'fynnance-5031a'
 
 # Initialize Plaid credentials manager
