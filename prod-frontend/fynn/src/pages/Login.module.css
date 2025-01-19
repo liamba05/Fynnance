@@ -1,22 +1,21 @@
 .fynnLogin {
-  margin: 0;
-  height: 105px;
-  position: relative;
-  font-size: inherit;
-  font-weight: 400;
+  color: #000;
   font-family: inherit;
-  display: inline-block;
-  max-width: 100%;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  font-size: 45px;
+  margin-bottom: 16px;
+  text-align: left;
+  width: 100%;
 }
 .fynnLoginWrapper {
-  align-self: stretch;
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-  justify-content: flex-start;
-  padding: 0px 0px 0px var(--padding-5xs);
-  box-sizing: border-box;
-  max-width: 100%;
+  color: #000;
+  font-family: Kantumruy;
+  font-size: 85px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
 
 }
 /* good */
@@ -26,8 +25,9 @@
   flex-direction: column;
   align-items: flex-start;
   justify-content: flex-start;
-  gap: var(--gap-2xs);
+  gap: 12px;
   max-width: 100%;
+  margin-bottom: 24px;
 }
 /* good */
 .inputAreaWrapper {
@@ -135,25 +135,6 @@
   gap: 14px;
   max-width: 100%;
 }
-.frameGroup {
-  margin: 0;
-  width: 394px;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  justify-content: flex-start;
-  gap: 21.5px;
-  max-width: 100%;
-}
-.frameParent {
-  align-self: stretch;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: flex-start;
-  gap: 52px;
-  max-width: 100%;
-}
 .dontHaveAn {
   flex: 1;
   position: relative;
@@ -169,38 +150,24 @@
   cursor: pointer;
 }
 .signupLink {
-  width: 282px;
+  width: 100%;
   display: flex;
   flex-direction: row;
-  align-items: flex-start;
-  justify-content: flex-start;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  margin-top: 24px;
 }
 .signupLinkWrapper {
   align-self: stretch;
   display: flex;
   flex-direction: row;
-  align-items: flex-start;
-  justify-content: flex-start;
-  padding: 0px var(--padding-49xl) 0px 60px;
+  align-items: center;
+  justify-content: center;
+  padding: 0px;
   text-align: center;
   font-size: var(--font-size-mini);
   font-family: var(--standard-text-light);
-}
-.loginPopUp {
-  flex: 1;
-  backdrop-filter: blur(4px);
-  border-radius: var(--br-6xl);
-  background-color: var(--color-white);
-  border: 1.5px solid var(--color-black);
-  box-sizing: border-box;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: flex-start;
-  padding: var(--padding-xs) 55px var(--padding-2xs) var(--padding-44xl);
-  gap: 175px;
-  max-width: 100%;
 }
 .loginPopUpWrapper {
   display: flex;
@@ -210,34 +177,27 @@
   justify-content: center;
   align-items: center;
   gap: 10px;
-  color: var(--color-black);
-  font-family: var(--font-kantumruy);
+  height: 100vh;
+  overflow: hidden;
 }
 .login1 {
   min-height: 100vh;
-  background: linear-gradient(to right, #f5f5f5, #e0f2e9);
+  background: linear-gradient(90deg, #f0f9ef 19%, #6ebb61 74%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
 }
 
 .loginPopUp {
   background: white;
   border-radius: 16px;
-  padding: 32px;
+  padding: 24px;
   width: 100%;
   max-width: 400px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.fynnLogin {
-  font-size: 32px;
-  margin-bottom: 24px;
-  text-align: center;
-}
-
-.inputArea {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  margin-bottom: 24px;
+  overflow: auto;
+  max-height: 90vh;
 }
 
 .divider {
@@ -253,12 +213,8 @@
   background: #e0e0e0;
 }
 
-.signupLink {
-  text-align: center;
-  margin-top: 24px;
-}
-
 .signUp {
+  padding-left: 5px;
   color: #4CAF50;
   cursor: pointer;
   font-weight: 500;
@@ -267,81 +223,3 @@
 .signUp:hover {
   text-decoration: underline;
 }
-
-/* @media screen and (max-width: 1200px) {
-  .loginPopUpWrapper {
-    padding-left: var(--padding-245xl);
-    padding-right: var(--padding-245xl);
-    box-sizing: border-box;
-  }
-}
-@media screen and (max-width: 1050px) {
-  .fynnLogin {
-    font-size: 42px;
-  }
-
-  .login1 {
-    padding-left: var(--padding-15xl);
-    padding-right: var(--padding-15xl);
-    box-sizing: border-box;
-  }
-}
-@media screen and (max-width: 750px) {
-  .loginPopUp {
-    gap: 87px;
-    padding-left: var(--padding-12xl);
-    padding-right: var(--padding-8xl);
-    box-sizing: border-box;
-  }
-
-  .loginPopUpWrapper {
-    padding-left: var(--padding-113xl);
-    padding-right: var(--padding-113xl);
-    box-sizing: border-box;
-  }
-}
-@media screen and (max-width: 450px) {
-  .fynnLogin {
-    font-size: 25px;
-  }
-
-  .loginOptions {
-    padding-left: var(--padding-xl);
-    padding-right: var(--padding-xl);
-    box-sizing: border-box;
-  }
-
-  .lineParent {
-    gap: var(--gap-6xl);
-  }
-
-  .loginOptions1 {
-    padding-left: var(--padding-xl);
-    padding-right: var(--padding-xl);
-    box-sizing: border-box;
-  }
-
-  .frameParent {
-    gap: 26px;
-  }
-
-  .signupLinkWrapper {
-    padding-left: var(--padding-xl);
-    padding-right: var(--padding-xl);
-    box-sizing: border-box;
-  }
-
-  .loginPopUp {
-    gap: 44px;
-  }
-
-  .loginPopUpWrapper {
-    padding-left: var(--padding-xl);
-    padding-right: var(--padding-xl);
-    box-sizing: border-box;
-  }
-
-  .login1 {
-    gap: var(--gap-lgi);
-  }
-} */

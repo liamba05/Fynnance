@@ -5,21 +5,29 @@ import styles from "./FieldLabels.module.css";
 export type FieldLabelsType = {
   className?: string;
   email?: string;
+  fname?: string;
+  lname?: string;
   placeholder?: string;
   type?: string;
   fullWidth?: boolean;
   InputProps?: TextFieldProps['InputProps'];
   emailTextDecoration?: CSSProperties["textDecoration"];
+  change?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  value?: string;
 };
 
 const FieldLabels: FunctionComponent<FieldLabelsType> = ({
   className = "",
   email,
+  fname,
+  lname,
   emailTextDecoration,
   placeholder,
   type,
   fullWidth,
   InputProps,
+  change,
+  value,
 }) => {
   const emailStyle: CSSProperties = useMemo(() => {
     return {
@@ -31,7 +39,7 @@ const FieldLabels: FunctionComponent<FieldLabelsType> = ({
     <div className={[styles.fieldLabels, className].join(" ")}>
       <div className={styles.inputLabelPair}>
         <a className={styles.email} style={emailStyle}>
-          {email}
+          {email || fname || lname}
         </a>
       </div>
       <TextField
@@ -42,15 +50,29 @@ const FieldLabels: FunctionComponent<FieldLabelsType> = ({
         InputProps={InputProps}
         variant="outlined"
         sx={{
-          "& fieldset": { borderColor: "#000" },
+          "& fieldset": { 
+            borderColor: "#000",
+            borderRadius: "10px",
+          },
           "& .MuiInputBase-root": {
             height: "53px",
             backgroundColor: "#fff",
             borderRadius: "10px",
             fontSize: "20px",
+            overflow: "hidden",
           },
-          "& .MuiInputBase-input": { color: "#000" },
+          "& .MuiOutlinedInput-root": {
+            borderRadius: "10px",
+            "& fieldset": {
+              borderRadius: "10px",
+            },
+          },
+          "& .MuiInputBase-input": { 
+            color: "#000",
+          },
         }}
+        onChange={change}
+        value={value}
       />
     </div>
   );

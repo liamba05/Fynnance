@@ -150,15 +150,68 @@
   padding: var(--padding-base) var(--padding-42xl);
 }
 .inputPopUp {
-  height: 697px;
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  overflow: auto;
+  max-height: 90vh;
+}
+
+.loginContainerWrapper {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
-  padding: var(--padding-3xs);
-  box-sizing: border-box;
+  width: 100%;
+}
+
+.loginContainer {
+  width: 100%;
+}
+
+.fynnLogin {
+  color: #000;
+  font-family: inherit;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  font-size: 45px;
+  margin-bottom: 16px;
   text-align: left;
-  font-size: var(--font-size-61xl);
-  color: var(--color-black);
-  font-family: var(--font-kantumruy);
+  width: 100%;
+}
+
+.frameGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+}
+
+.inputArea {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 12px;
+  max-width: 100%;
+  margin-bottom: 24px;
+}
+
+/* Add button styles if you want to include them later */
+.submitButton {
+  width: 100%;
+  margin-top: 16px;
+  background: rgba(151, 229, 139, 0.77);
+  border-radius: 20px;
+  padding: 8px 16px;
+  font-size: 16px;
+  text-transform: none;
+}
+
+.submitButton:hover {
+  background: rgba(151, 229, 139, 0.85);
 }
