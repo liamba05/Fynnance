@@ -1,9 +1,22 @@
-from flask import Flask, request, jsonify, session
+from flask import Flask, request, jsonify, session, Response
 from flask_cors import CORS
 from firebase_admin import auth
 from functools import wraps
 from user_data_collection import UserDataCollection
 import os
+import plaid
+from plaid.api import plaid_api
+from plaid.configuration import Configuration
+from plaid.api_client import ApiClient
+from plaid.model.link_token_create_request import LinkTokenCreateRequest
+from plaid.model.link_token_create_request_user import LinkTokenCreateRequestUser
+from plaid.model.products import Products
+from plaid.model.country_code import CountryCode
+from plaid.model.item_public_token_exchange_request import ItemPublicTokenExchangeRequest
+from PlaidConnection.plaid_credentials_manager import PlaidCredentialsManager
+from PlaidConnection.plaid_data_service import get_user_financial_profile
+import openai
+from EncryptionKeyStorage.API_key_manager import APIKeyManager
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
@@ -23,6 +36,17 @@ app.config.update(
     SESSION_COOKIE_HTTPONLY=True,
     SESSION_COOKIE_SAMESITE='Lax'
 )
+
+# Constants for Plaid
+PLAID_ENV = 'https://sandbox.plaid.com'
+PLAID_REDIRECT_URI = 'https://localhost:8000'
+FIREBASE_PROJECT_ID = 'fynnance-5031a'
+
+# Initialize Plaid credentials manager
+credentials_manager = PlaidCredentialsManager()
+
+# Initialize OpenAI with our API key
+openai.api_key = APIKeyManager.get_api_key('openai')
 
 def require_auth(f):
     """Decorator to require Firebase authentication."""
@@ -314,5 +338,147 @@ def set_preferences():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+# Add Plaid routes
+@app.route('/api/create_link_token', methods=['POST'])
+@require_auth
+def create_link_token():
+    try:
+        user_id = session.get('firebase_user_id')
+        if not user_id:
+            return jsonify({'error': 'User not authenticated'}), 401
+
+        plaid_client = credentials_manager.create_plaid_client()
+        
+        request_data = LinkTokenCreateRequest(
+            user=LinkTokenCreateRequestUser(
+                client_user_id=user_id
+            ),
+            client_name="Fynn",
+            products=[Products("auth"), Products("transactions"), Products("liabilities"), Products("investments")],
+            country_codes=[CountryCode('US')],
+            language='en',
+            redirect_uri=PLAID_REDIRECT_URI
+        )
+        
+        response = plaid_client.link_token_create(request_data)
+        
+        if not response or not response.get('link_token'):
+            return jsonify({'error': 'Failed to create link token'}), 500
+            
+        return jsonify({
+            'link_token': response['link_token'],
+            'expiration': response.get('expiration')
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'error': 'Failed to create link token',
+            'details': str(e)
+        }), 500
+
+@app.route('/api/exchange_public_token', methods=['POST'])
+@require_auth
+def exchange_public_token():
+    try:
+        data = request.get_json()
+        public_token = data.get('public_token')
+        user_id = session.get('firebase_user_id')
+        
+        if not user_id:
+            return jsonify({'error': 'User not authenticated'}), 401
+        
+        if not public_token:
+            return jsonify({'error': 'Public token is required'}), 400
+            
+        plaid_client = credentials_manager.create_plaid_client()
+        
+        exchange_request = ItemPublicTokenExchangeRequest(
+            public_token=public_token
+        )
+        exchange_response = plaid_client.item_public_token_exchange(exchange_request)
+        
+        access_token = exchange_response['access_token']
+        item_id = exchange_response['item_id']
+        
+        credentials_manager.store_user_access_token(user_id, access_token, item_id)
+        
+        try:
+            accounts_response = plaid_client.accounts_get({
+                'access_token': access_token
+            })
+            
+            return jsonify({
+                'success': True,
+                'item_id': item_id,
+                'accounts': accounts_response['accounts'],
+                'numbers_available': 'auth' in exchange_response.get('consent', {}).get('scopes', [])
+            })
+        except Exception:
+            return jsonify({
+                'success': True,
+                'item_id': item_id,
+                'warning': 'Connected successfully but failed to fetch initial account data'
+            })
+            
+    except Exception as e:
+        return jsonify({
+            'error': 'Internal server error during token exchange',
+            'details': str(e)
+        }), 500
+
+@app.route('/api/financial_profile', methods=['GET'])
+@require_auth
+def get_financial_profile():
+    try:
+        transactions_days = request.args.get('transactions_days', default=30, type=int)
+        profile = get_user_financial_profile(transactions_days=transactions_days)
+        return jsonify(profile)
+    except ValueError as e:
+        return jsonify({'error': str(e)}), 400
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/stream_gpt_response', methods=['POST'])
+@require_auth
+def stream_gpt_response():
+    try:
+        data = request.get_json()
+        prompt = data.get('prompt', '')
+
+        if not prompt:
+            return jsonify({'error': 'Prompt is required'}), 400
+
+        def generate():
+            try:
+                response = openai.ChatCompletion.create(
+                    model="gpt-4",
+                    messages=[{"role": "user", "content": prompt}],
+                    stream=True
+                )
+
+                for chunk in response:
+                    if chunk and hasattr(chunk.choices[0].delta, 'content'):
+                        content = chunk.choices[0].delta.content
+                        if content:
+                            yield f"data: {content}\n\n"
+
+            except Exception as e:
+                yield f"data: Error: {str(e)}\n\n"
+
+        return Response(
+            generate(),
+            mimetype='text/event-stream',
+            headers={
+                'Cache-Control': 'no-cache',
+                'X-Accel-Buffering': 'no'
+            }
+        )
+
+    except Exception as e:
+        return jsonify({
+            'error': 'Failed to process GPT request',
+            'details': str(e)
+        }), 500
+
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5002, debug=True) 
+    app.run(host='0.0.0.0', port=5002, debug=True)
