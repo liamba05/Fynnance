@@ -203,13 +203,13 @@ class UserDataCollection:
             return ""
         return doc.get('preferences', "")
 
-    def get_memories(self) -> str:
-        """Get user's memories. Internal use only."""
+    def get_memories(self) -> list[str]:
+        """Get user's memories as a list. Internal use only."""
         user_id = self._get_current_user_id()
         doc = self.db.collection('users').document(user_id).collection('gpt_data').document('memories').get()
         if not doc.exists:
-            return ""
-        return doc.get('memories', "")
+            return []
+        return doc.get('memories', [])
 
     def get_conclusions(self) -> str:
         """Get user's conclusions. Internal use only."""
@@ -238,13 +238,58 @@ class UserDataCollection:
             'preferences': preferences
         }, merge=True)
 
-    def set_memories(self, memories: str) -> None:
-        """Set user's memories. Internal use only."""
-        if not memories or not memories.strip():
-            raise ValueError("Memories cannot be empty")
+    def set_memories(self, memories: list[str]) -> None:
+        """Set user's memories list. Internal use only."""
+        if not isinstance(memories, list):
+            raise ValueError("Memories must be a list of strings")
+        if not all(isinstance(m, str) and m.strip() for m in memories):
+            raise ValueError("All memories must be non-empty strings")
+        
         user_id = self._get_current_user_id()
         self.db.collection('users').document(user_id).collection('gpt_data').document('memories').set({
             'memories': memories
+        }, merge=True)
+
+    def add_to_memories(self, memories: Union[str, list[str]]) -> None:
+        """Append one or more memories to the user's memories list. Internal use only.
+        
+        Args:
+            memories: Either a single memory string or a list of memory strings to add
+        
+        Raises:
+            ValueError: If any memory string is empty or if input type is invalid
+        """
+        # Convert single string to list for uniform handling
+        if isinstance(memories, str):
+            memories = [memories]
+        elif not isinstance(memories, list):
+            raise ValueError("Memories must be either a string or a list of strings")
+        
+        # Validate all memories
+        if not all(isinstance(m, str) and m.strip() for m in memories):
+            raise ValueError("All memories must be non-empty strings")
+        
+        # Clean the memories (strip whitespace)
+        memories = [m.strip() for m in memories]
+        
+        user_id = self._get_current_user_id()
+        doc_ref = self.db.collection('users').document(user_id).collection('gpt_data').document('memories')
+        doc = doc_ref.get()
+        
+        current_memories = []
+        if doc.exists:
+            current_memories = doc.get('memories', [])
+        
+        # Ensure we're working with a list
+        if not isinstance(current_memories, list):
+            current_memories = []
+        
+        # Add all new memories
+        current_memories.extend(memories)
+        
+        # Update the document
+        doc_ref.set({
+            'memories': current_memories
         }, merge=True)
 
     def set_conclusions(self, conclusions: str) -> None:

@@ -339,16 +339,22 @@ def set_preferences():
         return jsonify({'error': str(e)}), 500
 
 # Add Plaid routes
+# Note: Login is always user_good pass_good no matter what you do and for capital one
+# Can be changed for production
 @app.route('/api/create_link_token', methods=['POST'])
 @require_auth
 def create_link_token():
+    """Create a Plaid Link token for initializing Plaid Link in the frontend."""
     try:
-        user_id = session.get('firebase_user_id')
+        user_id = session.get('user_id')
         if not user_id:
+            app.logger.error("User ID not found in session")
             return jsonify({'error': 'User not authenticated'}), 401
 
+        app.logger.info(f"Creating link token for user: {user_id}")
         plaid_client = credentials_manager.create_plaid_client()
         
+        # Create the Link token request with account filters
         request_data = LinkTokenCreateRequest(
             user=LinkTokenCreateRequestUser(
                 client_user_id=user_id
@@ -360,17 +366,29 @@ def create_link_token():
             redirect_uri=PLAID_REDIRECT_URI
         )
         
-        response = plaid_client.link_token_create(request_data)
-        
-        if not response or not response.get('link_token'):
-            return jsonify({'error': 'Failed to create link token'}), 500
+        app.logger.info("Sending link token create request to Plaid")
+        try:
+            response = plaid_client.link_token_create(request_data)
+            app.logger.info("Successfully created link token")
             
-        return jsonify({
-            'link_token': response['link_token'],
-            'expiration': response.get('expiration')
-        })
+            if not response or not response.get('link_token'):
+                app.logger.error("No link token in response")
+                return jsonify({'error': 'Failed to create link token - no token in response'}), 500
+                
+            return jsonify({
+                'link_token': response['link_token'],
+                'expiration': response.get('expiration')
+            })
+            
+        except Exception as plaid_error:
+            app.logger.error(f"Plaid API error: {str(plaid_error)}")
+            return jsonify({
+                'error': 'Failed to create link token',
+                'details': str(plaid_error)
+            }), 500
         
     except Exception as e:
+        app.logger.error(f"Server error creating link token: {str(e)}")
         return jsonify({
             'error': 'Failed to create link token',
             'details': str(e)
@@ -379,10 +397,11 @@ def create_link_token():
 @app.route('/api/exchange_public_token', methods=['POST'])
 @require_auth
 def exchange_public_token():
+    """Exchange a public token from Plaid Link for an access token."""
     try:
         data = request.get_json()
         public_token = data.get('public_token')
-        user_id = session.get('firebase_user_id')
+        user_id = session.get('user_id')
         
         if not user_id:
             return jsonify({'error': 'User not authenticated'}), 401
@@ -392,35 +411,50 @@ def exchange_public_token():
             
         plaid_client = credentials_manager.create_plaid_client()
         
-        exchange_request = ItemPublicTokenExchangeRequest(
-            public_token=public_token
-        )
-        exchange_response = plaid_client.item_public_token_exchange(exchange_request)
-        
-        access_token = exchange_response['access_token']
-        item_id = exchange_response['item_id']
-        
-        credentials_manager.store_user_access_token(user_id, access_token, item_id)
-        
         try:
-            accounts_response = plaid_client.accounts_get({
-                'access_token': access_token
-            })
+            # Exchange the public token for an access token
+            exchange_request = ItemPublicTokenExchangeRequest(
+                public_token=public_token
+            )
+            exchange_response = plaid_client.item_public_token_exchange(exchange_request)
             
+            # Get the access token and item ID
+            access_token = exchange_response['access_token']
+            item_id = exchange_response['item_id']
+            
+            # Store the access token securely
+            credentials_manager.store_user_access_token(user_id, access_token, item_id)
+            
+            # Get initial account data
+            try:
+                accounts_response = plaid_client.accounts_get({
+                    'access_token': access_token
+                })
+                
+                return jsonify({
+                    'success': True,
+                    'item_id': item_id,
+                    'accounts': accounts_response['accounts'],
+                    'numbers_available': 'auth' in exchange_response.get('consent', {}).get('scopes', [])
+                })
+            except Exception as acc_error:
+                app.logger.error(f"Error fetching initial account data: {str(acc_error)}")
+                # Still return success even if getting accounts fails
+                return jsonify({
+                    'success': True,
+                    'item_id': item_id,
+                    'warning': 'Connected successfully but failed to fetch initial account data'
+                })
+                
+        except Exception as plaid_error:
+            app.logger.error(f"Plaid API error: {str(plaid_error)}")
             return jsonify({
-                'success': True,
-                'item_id': item_id,
-                'accounts': accounts_response['accounts'],
-                'numbers_available': 'auth' in exchange_response.get('consent', {}).get('scopes', [])
-            })
-        except Exception:
-            return jsonify({
-                'success': True,
-                'item_id': item_id,
-                'warning': 'Connected successfully but failed to fetch initial account data'
-            })
+                'error': 'Failed to exchange public token',
+                'details': str(plaid_error)
+            }), 500
             
     except Exception as e:
+        app.logger.error(f"Server error in token exchange: {str(e)}")
         return jsonify({
             'error': 'Internal server error during token exchange',
             'details': str(e)
@@ -429,10 +463,20 @@ def exchange_public_token():
 @app.route('/api/financial_profile', methods=['GET'])
 @require_auth
 def get_financial_profile():
+    """
+    Get a comprehensive financial profile for the authenticated user.
+    Query Parameters:
+        transactions_days (optional): Number of days of transaction history to include (default: 30)
+    """
     try:
+        # Get transactions_days from query parameters, default to 30
         transactions_days = request.args.get('transactions_days', default=30, type=int)
+        
+        # Get the profile using the data service
         profile = get_user_financial_profile(transactions_days=transactions_days)
+        
         return jsonify(profile)
+        
     except ValueError as e:
         return jsonify({'error': str(e)}), 400
     except Exception as e:

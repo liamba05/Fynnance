@@ -9,6 +9,9 @@ from EncryptionKeyStorage.API_key_manager import APIKeyManager
 os.environ['GOOGLE_CLOUD_PROJECT'] = '258766016727'
 api_key_manager = APIKeyManager()
 
+from UserDataCollection.user_data_collection import UserDataCollection
+user_data = UserDataCollection()
+
 
 def get_memory_from_conversation(messages):
     """Extracts memory items from the conversation messages.
@@ -21,7 +24,6 @@ def get_memory_from_conversation(messages):
     Returns:
         list (str): The memory items.
     """
-    memory = []
 
     # only look at messages that are from the user
     user_messages = [m for m in messages if m["role"] == "user"]
@@ -30,19 +32,19 @@ def get_memory_from_conversation(messages):
     client = OpenAI(api_key=api_key_manager.get_api_key('openai'))
 
     # RETREIVE THE CURRENT MEMORY SO WE DON'T OVERLAP
-    current_memory = "  "
+    current_memory = user_data.get_memories()
     # add current_memory into the prompts below to gpt
 
     completion = client.chat.completions.create(
         model="gpt-4o",
         messages=[{"role":"developer", "content": f"Of the given messages from a user's conversations, which should be remembered for future interactions? It may be nothing, but keep it short as possible,\
-                   and DO NOT REPEAT INFORMATION. SHORT AS POSSIBLE. Also, each memory should be freestanding, not relying on another memory peice. You may combine two memories if it will save space in the end. \
+                   and DO NOT REPEAT INFORMATION. SHORT AS POSSIBLE. Specifically focus on little user details that will help you provide better advice in the future. Also, each memory should be freestanding, not relying on another memory peice. You may combine two memories if it will save space in the end. \
                    Remember not to overlap with memory that is already stored: {current_memory}. Return the new memory only in a '|' seperated string that the system will convert into a string list. \
                     User messages: {user_messages}"}],
     )
     new_memory = completion.choices[0].message.content.split("|")
-    memory.extend(new_memory)
-    return memory
+    user_data.add_to_memories(new_memory)
+    return new_memory
 
 
 if __name__ == "__main__":
