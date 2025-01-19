@@ -18,6 +18,9 @@ from PlaidConnection.plaid_data_service import get_user_financial_profile
 import openai
 from EncryptionKeyStorage.API_key_manager import APIKeyManager
 
+# Import ChatService
+from ChatBot.chat_service import ChatService
+
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
 
@@ -47,6 +50,9 @@ credentials_manager = PlaidCredentialsManager()
 
 # Initialize OpenAI with our API key
 openai.api_key = APIKeyManager.get_api_key('openai')
+
+# Initialize ChatService
+chat_service = ChatService()
 
 def require_auth(f):
     """Decorator to require Firebase authentication."""
@@ -492,22 +498,17 @@ def stream_gpt_response():
         if not prompt:
             return jsonify({'error': 'Prompt is required'}), 400
 
+        user_id = session.get('firebase_user_id')
+        if not user_id:
+            return jsonify({'error': 'User not authenticated'}), 401
+
+        # Retrieve existing messages from session or initialize
+        messages = session.get('messages') or chat_service.initialize_chat(user_id)
+
         def generate():
-            try:
-                response = openai.ChatCompletion.create(
-                    model="gpt-4",
-                    messages=[{"role": "user", "content": prompt}],
-                    stream=True
-                )
-
-                for chunk in response:
-                    if chunk and hasattr(chunk.choices[0].delta, 'content'):
-                        content = chunk.choices[0].delta.content
-                        if content:
-                            yield f"data: {content}\n\n"
-
-            except Exception as e:
-                yield f"data: Error: {str(e)}\n\n"
+            """Generator function to stream responses."""
+            for content in chat_service.get_response_stream(messages, prompt):
+                yield f"data: {content}\n\n"
 
         return Response(
             generate(),

@@ -72,14 +72,6 @@ def get_user_context(user_data_collection):
             "content": f"Based off your previous interactions with the user, here are some important points that we decided to remember: {memory_list}. Use these points to provide more personalized financial advice to better achieve the user's goals and give more personalized advice."
         })
     
-    # Get conclusions if they exist (for internal context)
-    conclusions = user_data_collection.get_conclusions()
-    if conclusions:
-        messages.append({
-            "role": "developer",
-            "content": f"Based on previous interactions, these conclusions have been drawn about the user's financial situation: {conclusions}. Consider these insights when providing advice, but be ready to update them if new information suggests otherwise."
-        })
-    
     return messages
 
 def initialize_chat():
