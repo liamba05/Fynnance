@@ -47,6 +47,42 @@ def get_memory_from_conversation(messages):
     return new_memory
 
 
+def save_credit_score(messages):
+    """Analyzes the chats and saves the user's credit score
+    if applicable.
+
+    Parameters:
+        messages (object): The conversation messages.
+
+    Returns:
+        int: The credit score if found.
+    """
+    # only look at messages that are from the user
+    user_messages = [m for m in messages if m["role"] == "user"]
+
+    # initialize gpt client
+    client = OpenAI(api_key=api_key_manager.get_api_key('openai'))
+
+    # see if the user's credit is stored already
+    current_credit = user_data.get_credit_score()
+
+    if current_credit:
+        return current_credit
+
+    # ask gpt to update the credit score
+    completion = client.chat.completions.create(
+        model="gpt-4o",
+        messages=[{"role":"developer", "content": f"Of the given messages from a user's conversation, extract the user's credit score if it is mentioned, else return -1. Remember \
+                   theat the credit score must be inbetween 300 and 850. If the credit score is not mentioned, return -1. If the credit score is mentioned, return the credit score as a string number and nothing else. \
+                   "}],
+    )
+    new_credit = int(completion.choices[0].message.content)
+    if new_credit != -1:
+        user_data.set_credit_score(new_credit)
+    return new_credit
+
+
+
 if __name__ == "__main__":
 
     test_messages = [
