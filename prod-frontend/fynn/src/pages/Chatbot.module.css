@@ -1,0 +1,271 @@
+.collapsableLeftSidebarWrapper {
+  margin-left: -404px;
+  width: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 0px var(--padding-7xs) 0px 0px;
+  box-sizing: border-box;
+  max-width: 100%;
+}
+.fynnResponseLayoutParent {
+  align-self: stretch;
+  height: 703px;
+  position: relative;
+}
+.parent {
+  align-self: stretch;
+  height: 76px;
+  font-family: var(--standard-text-light);
+  font-weight: 600;
+  font-size: var(--standard-text-light-size);
+  color: var(--color-dimgray);
+  width: auto;
+}
+.frameParent {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: flex-start;
+  gap: 115px;
+}
+.messageBarLayoutInner {
+  height: 944px;
+  width: 876px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  max-width: 100%;
+  flex-shrink: 0;
+}
+.messageBarLayoutChild {
+  align-self: stretch;
+  width: 3px;
+  position: relative;
+  border-right: 3px solid var(--color-lightgreen-100);
+  box-sizing: border-box;
+}
+.messageBarLayout {
+  height: 1117px;
+  width: 934px;
+  border: 1px solid rgba(0, 0, 0, 0);
+  box-sizing: border-box;
+  overflow: hidden;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  justify-content: flex-start;
+  padding: 0px var(--padding-9xl);
+  gap: 31px;
+  max-width: 100%;
+}
+.leftCollapsableButton {
+  height: 29px;
+  width: 18px;
+  position: relative;
+}
+.leftCollapsableButtonWrapper {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 0px var(--padding-9xs) 0px var(--padding-11xs);
+}
+.chevronBottomNormalIcon {
+  width: 24px;
+  height: 24px;
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.frameContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 62px;
+}
+.frameWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-end;
+  padding: 0px 0px 19px;
+}
+.frameGroup {
+  width: 914px;
+  margin: 0 !important;
+  position: absolute;
+  top: 10px;
+  left: 352px;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--gap-xl);
+  max-width: 100%;
+}
+.chatSectionWrapper {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 0px 43px 0px 41px;
+}
+.frameChild {
+  align-self: stretch;
+  position: relative;
+  max-width: 100%;
+  overflow: hidden;
+  max-height: 100%;
+}
+.tvIcon {
+  width: 36px;
+  height: 36px;
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.liveNews {
+  align-self: stretch;
+  position: relative;
+}
+.profile {
+  position: relative;
+  display: inline-block;
+  min-width: 89px;
+}
+.settings {
+  position: relative;
+  display: inline-block;
+  min-width: 98px;
+}
+.liveNewsParent {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: var(--gap-17xl);
+}
+.frameWrapper2 {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 4.5px 0px 0px;
+}
+.frameParent1 {
+  width: 169px;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: var(--gap-base);
+}
+.goaltipsButtonParent {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: var(--gap-6xl);
+}
+.frameWrapper1 {
+  align-self: stretch;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 0px var(--padding-3xl) 0px var(--padding-xl);
+}
+.vectorParent {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 64.1px;
+}
+.frameDiv {
+  width: 395px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 111.9px;
+  max-width: 90%;
+  height: 100%;
+  overflow: auto;
+}
+.chatbot {
+  width: 100%;
+  position: relative;
+  background-color: var(--color-white);
+  overflow: hidden;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 0px 0px 0px 395px;
+  box-sizing: border-box;
+  gap: var(--gap-9xs);
+  line-height: normal;
+  letter-spacing: normal;
+  text-align: left;
+  font-size: var(--standard-text-light-size);
+  color: var(--color-black);
+  font-family: var(--standard-text-light);
+}
+
+@media screen and (max-width: 1275px) {
+  .chatbot {
+    flex-wrap: wrap;
+    padding: var(--padding-xl);
+    box-sizing: border-box;
+  }
+}
+@media screen and (max-width: 1100px) {
+  .frameParent {
+    gap: 57px;
+  }
+}
+@media screen and (max-width: 750px) {
+  .messageBarLayout {
+    gap: 15px;
+  }
+}
+@media screen and (max-width: 450px) {
+  .frameParent {
+    gap: var(--gap-10xl);
+  }
+
+  .chatSectionWrapper {
+    padding-right: var(--padding-xl);
+    box-sizing: border-box;
+  }
+
+  .liveNews {
+    font-size: var(--font-size-base);
+  }
+
+  .profile {
+    font-size: var(--font-size-base);
+  }
+
+  .settings {
+    font-size: var(--font-size-base);
+  }
+
+  .vectorParent {
+    gap: 32px;
+  }
+
+  .frameDiv {
+    gap: var(--gap-37xl);
+  }
+}
