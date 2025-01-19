@@ -1,179 +1,188 @@
-import { FunctionComponent } from "react";
-import {
-  Select,
-  InputLabel,
-  MenuItem,
-  FormHelperText,
-  FormControl,
-} from "@mui/material";
-import CollapsableLeftSidebar from "../components/collapsableLeftSidebar/CollapsableLeftSidebar";
-import FynnResponseLayout from "../components/fynnResponse/FynnResponseLayout";
-import DefaultChatDesign from "../components/defaultChatDesign/DefaultChatDesign";
-import UserQuestionLayout from "../components/userQuestionLayout/UserQuestionLayout";
-import ChatSection from "../components/chatSections/ChatSection";
-import GoalTipsButton from "../components/goalTips/GoalTipsButton";
+import { useState } from "react";
+import { Button, IconButton, Menu, MenuItem } from "@mui/material";
 import styles from "./Chatbot.module.css";
+import EditIcon from '@mui/icons-material/Edit';
+import SendIcon from '@mui/icons-material/Send';
+import MenuIcon from '@mui/icons-material/Menu';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import TrendingUpIcon from '@mui/icons-material/TrendingUp';
+import TvIcon from '@mui/icons-material/Tv';
+import PersonIcon from '@mui/icons-material/Person';
+import SettingsIcon from '@mui/icons-material/Settings';
+import Fynn100X100PxRectangle from "../components/Fynn100X100PxRectangle";
+import fynnLogo from '../assets/fynn-100-x-100-px-rectangle-sticker-portrait-2@3x.png';
+// import '@chatscope/chat-ui-kit-react-styles/dist/default/styles.min.css';
+// import { MainContainer, ChatContainer, MessageList, Message } from '@chatscope/chat-ui-kit-react';
 
-export type ChatbotType = {
-  onClose?: () => void;
-};
+interface ChatMessage {
+  sender: string;
+  message: string;
+  direction: string;
+}
 
-const Chatbot: FunctionComponent<ChatbotType> = ({ onClose }) => {
+function Chatbot() {
+  const [message, setMessage] = useState("");
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [menuText, setMenuText] = useState("Menu");
+  const [showWelcome, setShowWelcome] = useState(true);
+
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
+
+  const handleSubmit = async (message: string) => {
+    setShowWelcome(false);
+    const newMessage: ChatMessage = {
+      sender: "user",
+      message: message,
+      direction: "outgoing",
+    };
+    setChatMessages([...chatMessages, newMessage]);
+  };
+
+  const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleOptionClick = (text: string) => {
+    setMenuText(text);
+    setAnchorEl(null);
+  };
+
+
+
   return (
     <div className={styles.chatbot}>
-      <div className={styles.collapsableLeftSidebarWrapper}>
-        <CollapsableLeftSidebar property1="Default" />
+      {/* Right Sidebar (now on left) */}
+      <div className={styles.rightSidebar}>
+        <div className={styles.rightSidebarContent}>
+          <Button
+            endIcon={<KeyboardArrowDownIcon />}
+            onClick={handleMenuClick}
+            className={styles.menuButton}
+          >
+            {menuText}
+          </Button>
+          <Menu
+            anchorEl={anchorEl}
+            open={Boolean(anchorEl)}
+            onClose={() => setAnchorEl(null)}
+            className={styles.dropdownMenu}
+          >
+            <MenuItem onClick={() => handleOptionClick("Goals + Tips")}>
+              <TrendingUpIcon sx={{ marginRight: '8px' }} />
+              Goals + Tips
+            </MenuItem>
+            <MenuItem onClick={() => handleOptionClick("Live News")}>
+              <TvIcon sx={{ marginRight: '8px' }} />
+              Live News
+            </MenuItem>
+            <MenuItem onClick={() => handleOptionClick("Profile")}>
+              <PersonIcon sx={{ marginRight: '8px' }} />
+              Profile
+            </MenuItem>
+            <MenuItem onClick={() => handleOptionClick("Settings")}>
+              <SettingsIcon sx={{ marginRight: '8px' }} />
+              Settings
+            </MenuItem>
+          </Menu>
+        </div>
       </div>
-      <div className={styles.messageBarLayout}>
-        <div className={styles.messageBarLayoutInner}>
-          <div className={styles.frameParent}>
-            <div className={styles.fynnResponseLayoutParent}>
-              <FynnResponseLayout />
-              <DefaultChatDesign />
-            </div>
-            <FormControl
-              className={styles.parent}
-              variant="standard"
-              sx={{
-                borderTopWidth: "0px",
-                borderRightWidth: "0px",
-                borderBottomWidth: "0px",
-                borderLeftWidth: "0px",
-                borderRadius: "0px 0px 0px 0px",
-                width: "95.09132420091323%",
-                height: "76px",
-                m: 0,
-                p: 0,
-                "& .MuiInputBase-root": {
-                  m: 0,
-                  p: 0,
-                  minHeight: "76px",
-                  justifyContent: "center",
-                  display: "inline-flex",
-                },
-                "& .MuiInputLabel-root": {
-                  m: 0,
-                  p: 0,
-                  minHeight: "76px",
-                  display: "inline-flex",
-                },
-                "& .MuiMenuItem-root": {
-                  m: 0,
-                  p: 0,
-                  height: "76px",
-                  display: "inline-flex",
-                },
-                "& .MuiSelect-select": {
-                  m: 0,
-                  p: 0,
-                  height: "76px",
-                  alignItems: "center",
-                  display: "inline-flex",
-                },
-                "& .MuiInput-input": { m: 0, p: 0 },
-                "& .MuiInputBase-input": {
-                  color: "rgba(107, 107, 107, 0.5)",
-                  fontSize: 20,
-                  fontWeight: "SemiBold",
-                  fontFamily: "IBM Plex Mono",
-                  textAlign: "left",
-                  p: "0 !important",
-                  marginLeft: "62px",
-                },
-              }}
-            >
-              <InputLabel color="primary" />
-              <Select
-                color="primary"
-                disableUnderline
-                displayEmpty
-                IconComponent={() => (
-                  <img
-                    width="56.6px"
-                    height="56.6px"
-                    src="/send.png"
-                    style={{ marginRight: "81.4px" }}
-                  />
-                )}
-              >
-                <MenuItem>Type Message</MenuItem>
-              </Select>
-              <FormHelperText />
-            </FormControl>
-          </div>
-        </div>
-        <div className={styles.messageBarLayoutChild} />
-      </div>
-      <header className={styles.frameGroup}>
-        <div className={styles.frameWrapper}>
-          <div className={styles.frameContainer}>
-            <div className={styles.leftCollapsableButtonWrapper}>
-              <img
-                className={styles.leftCollapsableButton}
-                loading="lazy"
-                alt=""
-                src="/left-collapsable-button.svg"
-              />
-            </div>
-            <img
-              className={styles.chevronBottomNormalIcon}
-              loading="lazy"
-              alt=""
-              src="/chevronbottomnormal.svg"
-            />
-          </div>
-        </div>
-        <UserQuestionLayout />
-      </header>
-      <div className={styles.frameDiv}>
-        <div className={styles.chatSectionWrapper}>
-          <ChatSection />
-        </div>
-        <div className={styles.vectorParent}>
-          <img
-            className={styles.frameChild}
-            loading="lazy"
-            alt=""
-            src="/line-1.svg"
-          />
-          <div className={styles.frameWrapper1}>
-            <div className={styles.goaltipsButtonParent}>
-              <GoalTipsButton />
-              <div className={styles.frameParent1}>
-                <div className={styles.goaltipsButtonParent}>
-                  <img
-                    className={styles.tvIcon}
-                    loading="lazy"
-                    alt=""
-                    src="/tv.svg"
-                  />
-                  <img
-                    className={styles.tvIcon}
-                    loading="lazy"
-                    alt=""
-                    src="/user.svg"
-                  />
-                  <img
-                    className={styles.tvIcon}
-                    loading="lazy"
-                    alt=""
-                    src="/settings.svg"
-                  />
-                </div>
-                <div className={styles.frameWrapper2}>
-                  <div className={styles.liveNewsParent}>
-                    <div className={styles.liveNews}>Live News</div>
-                    <div className={styles.profile}>Profile</div>
-                    <div className={styles.settings}>Settings</div>
-                  </div>
-                </div>
+
+      {/* Main Chat Area */}
+      <div className={styles.mainContent}>
+        {/* Toggle Sidebar Button */}
+        <IconButton 
+          className={styles.toggleButton}
+          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+        >
+          <MenuIcon />
+        </IconButton>
+
+        {/* Chat Messages Area */}
+        <div className={styles.messagesArea}>
+          <div className={styles.welcomeMessage} style={{ display: showWelcome ? 'flex' : 'none' }}>
+            <div className={styles.logoContainer}>
+              <div className={styles.fynnLogoWrapper}>
+                <Fynn100X100PxRectangle
+                  fynn100X100PxRectangleBackgroundImage={`url(${fynnLogo})`}
+                  showFynn
+                  fynnTextDecoration="none"
+                  fynnHeight="120px"
+                  fynnWidth="399px"
+                  fynnPosition="relative"
+                  fynnFontWeight="unset"
+                  fynnTop="unset"
+                />
               </div>
             </div>
+            <div className={styles.questionTemplates}>
+              <Button variant="contained" className={styles.templateButton}>
+                Question template?
+              </Button>
+              <Button variant="contained" className={styles.templateButton}>
+                Question template?
+              </Button>
+            </div>
           </div>
+          {!showWelcome && (
+            <div className={styles.chatMessages}>
+              <MainContainer>
+                <ChatContainer>
+                  <MessageList>
+                    {chatMessages.map((message, index) => (
+                      <Message key={index} model={{
+                        message: message.message,
+                        sender: message.sender,
+                        direction: message.direction
+                      }} />
+                    ))}
+                  </MessageList>
+                </ChatContainer>
+              </MainContainer>
+            </div>
+          )}
+        </div>
+
+        {/* Message Input */}
+        <form onSubmit={() => handleSubmit(message)} className={styles.messageForm}>
+          <input
+            type="text"
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            placeholder="Type Message"
+            className={styles.messageInput}
+          />
+          <IconButton type="submit" className={styles.sendButton} 
+          onSubmit={() => handleSubmit(message)}>
+            <SendIcon />
+          </IconButton>
+        </form>
+      </div>
+
+      {/* Left Sidebar (now on right) */}
+      <div className={`${styles.sidebar} ${isSidebarOpen ? styles.open : styles.closed}`}>
+        <Button
+          className={styles.newChatButton}
+          startIcon={<EditIcon />}
+          fullWidth
+          variant="contained"
+          sx={{
+            background: "#9fdb95",
+            color: "#000",
+            textTransform: "none",
+            fontSize: "16px",
+            padding: "12px",
+            "&:hover": { background: "#8bc681" },
+          }}
+        >
+          New Chat
+        </Button>
+        <div className={styles.sidebarContent}>
+          {/* Previous chats would go here */}
         </div>
       </div>
     </div>
   );
-};
+}
 
 export default Chatbot;

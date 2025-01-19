@@ -1,9 +1,6 @@
-import { useEffect } from "react";
 import {
   Routes,
-  Route,
-  useNavigationType,
-  useLocation,
+  Route
 } from "react-router-dom";
 import Register from "./pages/Register";
 import Chatbot from "./pages/Chatbot";
@@ -71,6 +68,7 @@ function App() {
   return (
     <Routes>
       <Route path="/" element={<Login/>} />
+      <Route path="/login" element={<Login/>} />
       <Route path="/chatbot" element={<Chatbot />} />
       <Route path="/financial-info" element={<FinancialInfo />} />
       <Route path="/register" element={<Register />} />

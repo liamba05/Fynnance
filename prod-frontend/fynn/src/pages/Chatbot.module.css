@@ -203,23 +203,135 @@
   overflow: auto;
 }
 .chatbot {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  background-color: white;
+}
+
+.sidebar {
+  width: 300px;
+  border-left: 1px solid #e0e0e0;
+  padding: 20px;
+  transition: all 0.3s ease;
+  background: white;
+}
+
+.sidebar.closed {
+  margin-right: -300px;
+}
+
+.newChatButton {
+  margin-bottom: 20px;
+}
+
+.mainContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.toggleButton {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 100;
+}
+
+.messagesArea {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.welcomeMessage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+  margin-bottom: 100px;
+  width: 100%;
+  max-width: 500px;
+  position: relative;
+  margin-top: -100px;
+}
+
+.logoContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 120px;
+  right: 145px;
   width: 100%;
   position: relative;
-  background-color: var(--color-white);
-  overflow: hidden;
+}
+
+.questionTemplates {
   display: flex;
-  flex-direction: row;
-  align-items: flex-start;
+  gap: 20px;
+  width: 100%;
+  justify-content: center;
+}
+
+.templateButton {
+  background-color: #e8f5e9 !important;
+  color: black !important;
+  text-transform: none !important;
+  border-radius: 20px !important;
+}
+
+.messageForm {
+  display: flex;
+  padding: 20px;
+  gap: 10px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.messageInput {
+  flex: 1;
+  padding: 12px 20px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 16px;
+}
+
+.sendButton {
+  color: #9fdb95 !important;
+}
+
+.rightSidebar {
+  width: 200px;
+  border-right: 1px solid #e0e0e0;
+  padding: 20px;
+}
+
+.rightSidebarContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 1px;
+}
+
+.menuButton {
+  color: black !important;
+  text-transform: none !important;
+  font-size: 16px !important;
+  padding: 8px 16px !important;
+  border-radius: 8px !important;
+  min-width: 120px !important;
+}
+
+.rightSidebarContent button {
+  color: black;
+  text-transform: none;
   justify-content: flex-start;
-  padding: 0px 0px 0px 395px;
-  box-sizing: border-box;
-  gap: var(--gap-9xs);
-  line-height: normal;
-  letter-spacing: normal;
-  text-align: left;
-  font-size: var(--standard-text-light-size);
-  color: var(--color-black);
-  font-family: var(--standard-text-light);
 }
 
 @media screen and (max-width: 1275px) {
@@ -268,4 +380,15 @@
   .frameDiv {
     gap: var(--gap-37xl);
   }
+}
+
+.fynnLogoWrapper {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto;
 }

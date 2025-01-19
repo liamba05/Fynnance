@@ -6,13 +6,33 @@ import { useNavigate } from "react-router-dom";
 import styles from "./Login.module.css";
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import googleLogo from '../assets/googlelogo9808-1@2x.png';
+import fynnLogo from '../assets/fynn-100-x-100-px-rectangle-sticker-portrait-2@3x.png';
 
-function Login(){
+function Login() {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
 
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEmail(e.target.value);
+  }
+
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPassword(e.target.value);
+  }
+
+  const handleSubmit = () => {
+    // TODO: handle submit
+    navigate("/chatbot");
+    console.log(email, password);
+  }
+
+ 
   const onSignUpTextClick = useCallback(() => {
-    navigate("/register1");
+    navigate("/register");
   }, [navigate]);
 
   const handleTogglePassword = () => {
@@ -22,15 +42,7 @@ function Login(){
   return (
     <div className={styles.login1}>
       <Fynn100X100PxRectangle
-        fynn100X100PxRectangleWidth="100px"
-        fynn100X100PxRectangleHeight="100px"
-        fynn100X100PxRectanglePadding="0"
-        fynn100X100PxRectangleMarginTop="40px"
-        fynn100X100PxRectangleBackgroundImage="url('/fynn-100-x-100-px-rectangle-sticker-portrait-2@3x.png')"
-        fynn100X100PxRectangleDisplay="flex"
-        fynn100X100PxRectangleFlexDirection="row"
-        fynn100X100PxRectangleAlignItems="flex-start"
-        fynn100X100PxRectangleJustifyContent="flex-start"
+        fynn100X100PxRectangleBackgroundImage={`url(${fynnLogo})`}
         showFynn
         fynnTextDecoration="none"
         fynnHeight="40px"
@@ -51,12 +63,15 @@ function Login(){
                 email="email" 
                 placeholder="johndoe@gmail.com"
                 fullWidth 
+                value={email}
+                change={handleEmailChange}
               />
               <FieldLabels
                 email="password"
                 placeholder="password"
                 type={showPassword ? "text" : "password"}
                 fullWidth
+                value={password}
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
@@ -66,6 +81,7 @@ function Login(){
                     </InputAdornment>
                   ),
                 }}
+                change={handlePasswordChange}
               />
             </div>
             <Button
@@ -90,7 +106,7 @@ function Login(){
             <Button
               fullWidth
               variant="outlined"
-              startIcon={<img src="/googlelogo9808-1@2x.png" alt="" width="20" />}
+              startIcon={<img src={googleLogo} width="20" />}
               sx={{
                 borderRadius: "20px",
                 textTransform: "none",
@@ -98,6 +114,7 @@ function Login(){
                 color: "#000",
                 "&:hover": { background: "#f5f5f5" },
               }}
+              onClick={handleSubmit}
             >
               Continue with Google
             </Button>
@@ -105,7 +122,7 @@ function Login(){
           <div className={styles.signupLink}>
             <span>Don't have an account: </span>
             <span className={styles.signUp} onClick={onSignUpTextClick}>
-              Sign Up
+                Sign Up
             </span>
           </div>
         </div>

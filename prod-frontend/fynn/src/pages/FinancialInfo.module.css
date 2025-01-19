@@ -243,23 +243,117 @@
   font-family: var(--font-kantumruy);
 }
 .financialInfo {
-  width: 100%;
-  height: 1117px;
-  position: relative;
-  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  min-height: 100vh;
   background: linear-gradient(90deg, #f0f9ef 19%, #6ebb61 74%);
-  border: 1px solid var(--color-black);
-  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   overflow: hidden;
+}
+
+.financialInfoWrapper {
+  display: flex;
+  width: 652px;
+  padding: 10px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.financialInfoPopUp {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  width: 100%;
+  max-width: 500px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  overflow: auto;
+  max-height: 90vh;
+}
+
+.fynnFinancial {
+  color: #000;
+  font-family: inherit;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  font-size: 45px;
+  margin-bottom: 16px;
+  text-align: left;
+  width: 100%;
+}
+
+.frameGroup {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  justify-content: flex-start;
-  padding: 218px var(--padding-49xl) var(--padding-64xl);
-  gap: var(--gap-10xl);
-  opacity: 0.9;
-  line-height: normal;
-  letter-spacing: normal;
+  gap: 24px;
+}
+
+.inputArea {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  margin-bottom: 24px;
+}
+
+.selectInput {
+  width: 100%;
+  height: 53px;
+  border-radius: 10px;
+  border: 1px solid #000;
+  padding: 0 16px;
+  font-size: 16px;
+  background-color: white;
+  color: #000;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='black'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 20px center;
+  background-size: 24px;
+  padding-right: 50px;
+}
+
+.selectInput:focus {
+  outline: none;
+  border-color: #000;
+}
+
+.disclaimer {
+  width: 100%;
+  text-align: center;
+  font-size: 14px;
+  color: #666;
+  margin-top: 24px;
+  line-height: 1.5;
+}
+
+.navigationButtons {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-top: 24px;
+  width: 100%;
+}
+
+.skipButton {
+  display: flex;
+  align-items: center;
+  color: #000000;
+  cursor: pointer;
+  font-weight: 500;
+  padding: 8px;
+}
+
+.skipButton:hover {
+  text-decoration: underline;
 }
 
 @media screen and (max-width: 900px) {
