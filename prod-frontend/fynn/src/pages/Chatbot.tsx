@@ -12,7 +12,7 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import Fynn100X100PxRectangle from "../components/Fynn100X100PxRectangle";
 import fynnLogo from '../assets/fynn-100-x-100-px-rectangle-sticker-portrait-2@3x.png';
 import { useChat } from 'ai/react';
-import {backendApiPreface} from '../App.tsx';
+import { backendApiPreface } from '../App.tsx';
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 30;
 
@@ -26,15 +26,30 @@ function Chatbot() {
 
   const { messages, input, handleInputChange, handleSubmit, setMessages, isLoading } = useChat({
     api: `${backendApiPreface}/api/stream_gpt_response`,
-    onResponse: (response) => {
-      // Optional: Handle streaming response
+    headers: {
+      'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+      'Content-Type': 'application/json',
+    },
+    body: {
+      // Additional body parameters if needed
+    },
+    onResponse: (response: Response) => {
+      if (response.status === 401) {
+        console.error('Authentication failed');
+        // Optionally redirect to login
+        window.location.href = '/login';
+        return;
+      }
       if (response.status === 429) {
         console.log('Rate limited!');
         return;
       }
     },
-    onFinish: (message) => {
-      // Optional: Handle completion
+    onError: (error: any) => {
+      console.error('Chat error:', error);
+      // Handle error appropriately
+    },
+    onFinish: (message: any) => {
       console.log(message);
       scrollToBottom();
     },
