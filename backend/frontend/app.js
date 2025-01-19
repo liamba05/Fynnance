@@ -55,17 +55,16 @@ registerForm.addEventListener('submit', async (e) => {
         return;
     }
 
+    // After:
     const userData = {
         firstName: document.getElementById('firstName').value,
         lastName: document.getElementById('lastName').value,
         email: email,
         dateOfBirth: document.getElementById('dateOfBirth').value,
         income: parseFloat(document.getElementById('income').value) || 0,
-        assets: parseFloat(document.getElementById('assets').value) || 0,
         zipCode: document.getElementById('zipCode').value,
         createdAt: firebase.firestore.FieldValue.serverTimestamp(),
         updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-        // Add these fields to track Plaid connection status
         plaidConnected: false,
         plaidItemId: null
     };
@@ -115,21 +114,43 @@ logoutButton.addEventListener('click', async () => {
 });
 
 // Auth state observer
-auth.onAuthStateChanged((user) => {
-    console.log('Auth state changed:', user ? 'logged in' : 'logged out');
-    if (user) {
-        // User is signed in
-        loginSection.style.display = 'none';
-        registerSection.style.display = 'none';
-        dashboardSection.style.display = 'block';
-        userDisplay.textContent = user.email;
-    } else {
-        // User is signed out
-        loginSection.style.display = 'block';
-        registerSection.style.display = 'none';
-        dashboardSection.style.display = 'none';
+auth.onAuthStateChanged(async (user) => {
+  console.log('Auth state changed:', user ? 'logged in' : 'logged out');
+  if (user) {
+    // User is signed in, show dashboard
+    loginSection.style.display = 'none';
+    registerSection.style.display = 'none';
+    dashboardSection.style.display = 'block';
+    userDisplay.textContent = user.email;
+
+    // Check Firestore to see if user is already connected to Plaid
+    const docRef = db.collection('users').doc(user.uid);
+    const docSnap = await docRef.get();
+    if (docSnap.exists) {
+      const userData = docSnap.data();
+      if (userData.plaidConnected) {
+        // They already have a Plaid token
+        const confirmReLink = confirm(
+          'You are already linked to Plaid. Do you want to link again?'
+        );
+        if (!confirmReLink) {
+          // If they say no, you can disable or hide the button
+          plaidButton.style.display = 'none';
+          alert('Continuing with existing Plaid connection.');
+        } else {
+          // They want to re-link, so let them proceed
+          alert('Okay, click "Connect to Plaid" again if you wish.');
+        }
+      }
     }
+  } else {
+    // User is signed out
+    loginSection.style.display = 'block';
+    registerSection.style.display = 'none';
+    dashboardSection.style.display = 'none';
+  }
 });
+
 
 // Plaid integration
 const MAX_RETRIES = 3;

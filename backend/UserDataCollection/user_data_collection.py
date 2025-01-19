@@ -39,7 +39,7 @@ class UserDataCollection:
         doc = self.db.collection('users').document(user_id).get()
         if not doc.exists:
             raise ValueError(f"User {user_id} not found")
-        return doc.get('first_name')
+        return doc.get('firstName')
 
     def get_last_name(self) -> str:
         """Get user's last name."""
@@ -47,7 +47,7 @@ class UserDataCollection:
         doc = self.db.collection('users').document(user_id).get()
         if not doc.exists:
             raise ValueError(f"User {user_id} not found")
-        return doc.get('last_name')
+        return doc.get('lastName')
 
     def get_email(self) -> str:
         """Get user's email."""
@@ -99,7 +99,7 @@ class UserDataCollection:
         doc = self.db.collection('users').document(user_id).get()
         if not doc.exists:
             raise ValueError(f"User {user_id} not found")
-        zip_code = doc.get('zip_code')
+        zip_code = doc.get('zipCode')
         return zip_code if zip_code is not None else "Field not present."
 
     def get_credit_score(self) -> Union[int, str]:
@@ -108,7 +108,9 @@ class UserDataCollection:
         doc = self.db.collection('users').document(user_id).get()
         if not doc.exists:
             raise ValueError(f"User {user_id} not found")
-        credit_score = doc.get('credit_score')
+        credit_score = doc.get('creditScore')
+        if credit_score is None:
+            credit_score = doc.get('credit_score')
         return credit_score if credit_score is not None else "Field not present."
 
     # Optional field setters
@@ -136,7 +138,7 @@ class UserDataCollection:
             raise ValueError("Invalid ZIP code format")
         user_id = self._get_current_user_id()
         self.db.collection('users').document(user_id).set({
-            'zip_code': zip_code
+            'zipCode': zip_code
         }, merge=True)
 
     def set_credit_score(self, credit_score: int) -> None:
@@ -145,5 +147,5 @@ class UserDataCollection:
             raise ValueError("Invalid credit score. Must be an integer between 300 and 850")
         user_id = self._get_current_user_id()
         self.db.collection('users').document(user_id).set({
-            'credit_score': credit_score
+            'creditScore': credit_score
         }, merge=True)

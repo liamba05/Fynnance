@@ -234,55 +234,96 @@ class EstateDataService:
             )
         }
 
+# EstateDataService.py
+
     def get_affordability_analysis(self) -> Dict[str, Any]:
         """
-        Analyze what properties the user can afford based on their income and assets.
-        Uses user data to provide personalized recommendations.
-        
-        Returns:
-            Dictionary containing affordability analysis and recommendations
+        Analyze what properties the user can afford based on their income
+        and credit score only (assets portion removed).
         """
+
         # Get user financial data
         income = self.user_data.get_income()
-        assets = self.user_data.get_assets()
         credit_score = self.user_data.get_credit_score()
-        
+
         if income == "Field not present.":
             raise ValueError("User income not set. Please set income for affordability analysis.")
-        
-        # Convert to float if present
-        down_payment = float(assets) if assets != "Field not present." else 0
-        credit_score = int(credit_score) if credit_score != "Field not present." else 680  # Default assumption
-        
+
+        # Default credit score to 680 if not present
+        credit_score = int(credit_score) if credit_score != "Field not present." else 680
+
         # Calculate affordability metrics
         monthly_income = float(income) / 12
         max_monthly_payment = monthly_income * 0.28  # 28% DTI ratio
-        
-        # Estimate max home price based on down payment and income
+
+        # Estimate max home price based solely on monthly payment
         interest_rate = self._estimate_interest_rate(credit_score)
-        max_loan = self._calculate_max_loan(max_monthly_payment, interest_rate, 30)
-        max_home_price = max_loan + down_payment
-        
+        max_home_price = self._calculate_max_loan(max_monthly_payment, interest_rate, 30)
+
         # Get market data for comparison
         market_stats = self.get_market_stats()
         median_price = market_stats["market_overview"]["median_price"]
-        
+
         return {
             "affordability_metrics": {
                 "max_home_price": round(max_home_price, 2),
                 "max_monthly_payment": round(max_monthly_payment, 2),
-                "estimated_down_payment": round(down_payment, 2),
-                "estimated_interest_rate": round(interest_rate, 2)
+                "estimated_interest_rate": round(interest_rate, 2),
             },
             "market_comparison": {
                 "median_home_price": median_price,
                 "price_difference": round(max_home_price - median_price, 2),
-                "affordability_index": round(max_home_price / median_price, 2)
+                "affordability_index": round(max_home_price / median_price, 2),
             },
             "recommendations": self._generate_affordability_recommendation(
-                max_home_price, median_price, down_payment, credit_score
+                max_home_price, median_price, credit_score
             ),
+            # Provide up to 5 sample listings under the max_home_price
             "sample_listings": self.get_property_listings(max_price=max_home_price)[:5]
+        }
+
+
+    def _generate_affordability_recommendation(
+        self, max_price: float, median_price: float, credit_score: int
+    ) -> Dict[str, Any]:
+        """
+        Generate personalized recommendations based on affordability analysis.
+        (Assets/down_payment logic removed.)
+        """
+        recommendations = []
+
+        # Market position analysis
+        if max_price < median_price:
+            recommendations.append({
+                "type": "market_position",
+                "message": "You may be priced out of median homes in this area",
+                "action_items": [
+                    "Consider nearby areas with lower median prices",
+                    "Look for below-market opportunities",
+                    "Consider smaller properties or condos"
+                ]
+            })
+
+        # Credit score recommendations
+        if credit_score < 740:
+            recommendations.append({
+                "type": "credit_improvement",
+                "message": "Improving your credit score could lower your interest rate",
+                "action_items": [
+                    "Work on improving credit score",
+                    "Pay down existing debt",
+                    "Check for credit report errors"
+                ]
+            })
+
+        summary_str = (
+            "Focus on " + ", ".join([r["type"].replace("_", " ") for r in recommendations])
+            if recommendations else "No specific recommendations"
+        )
+
+        return {
+            "recommendations": recommendations,
+            "summary": summary_str
         }
 
     def _estimate_interest_rate(self, credit_score: int) -> float:
@@ -334,53 +375,4 @@ class EstateDataService:
             "score": score,
             "recommendation": recommendation,
             "reasons": reasons
-        }
-
-    def _generate_affordability_recommendation(
-        self, max_price: float, median_price: float, 
-        down_payment: float, credit_score: int
-    ) -> Dict[str, Any]:
-        """Generate personalized recommendations based on affordability analysis."""
-        recommendations = []
-        
-        # Down payment analysis
-        down_payment_percent = (down_payment / max_price) * 100 if max_price > 0 else 0
-        if down_payment_percent < 20:
-            recommendations.append({
-                "type": "down_payment",
-                "message": "Consider saving for a larger down payment to avoid PMI",
-                "action_items": [
-                    "Aim for 20% down payment",
-                    "Look into first-time homebuyer programs",
-                    "Consider down payment assistance programs"
-                ]
-            })
-        
-        # Market position analysis
-        if max_price < median_price:
-            recommendations.append({
-                "type": "market_position",
-                "message": "You may be priced out of median homes in this area",
-                "action_items": [
-                    "Consider nearby areas with lower median prices",
-                    "Look for below-market opportunities",
-                    "Consider smaller properties or condos"
-                ]
-            })
-        
-        # Credit score recommendations
-        if credit_score < 740:
-            recommendations.append({
-                "type": "credit_improvement",
-                "message": "Improving your credit score could lower your interest rate",
-                "action_items": [
-                    "Work on improving credit score",
-                    "Pay down existing debt",
-                    "Check for credit report errors"
-                ]
-            })
-        
-        return {
-            "recommendations": recommendations,
-            "summary": "Focus on " + ", ".join([r["type"].replace("_", " ") for r in recommendations])
         }

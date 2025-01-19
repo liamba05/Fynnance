@@ -1,12 +1,15 @@
 from google.cloud import secretmanager
 import firebase_admin
-from firebase_admin import credentials, firestore
+from firebase_admin import credentials, firestore, db
 from cryptography.fernet import Fernet
 import os
 from functools import lru_cache
 from typing import Optional, Tuple
 import sys
 from pathlib import Path
+from plaid.api import plaid_api
+from plaid.api_client import ApiClient
+from plaid.configuration import Configuration
 
 # Add the project root to Python path
 project_root = str(Path(__file__).parent.parent)
@@ -153,6 +156,18 @@ class PlaidCredentialsManager:
         except Exception as e:
             print(f"Error removing access token: {str(e)}")
             raise
+
+    def create_plaid_client(self, client_id: str, secret: str) -> plaid_api.PlaidApi:
+        """Create a Plaid API client with the given credentials."""
+        configuration = Configuration(
+            host='https://sandbox.plaid.com',
+            api_key={
+                'clientId': client_id,
+                'secret': secret,
+            }
+        )
+        api_client = ApiClient(configuration)
+        return plaid_api.PlaidApi(api_client)
 
 if __name__ == "__main__":
     # Test the manager with a dummy token

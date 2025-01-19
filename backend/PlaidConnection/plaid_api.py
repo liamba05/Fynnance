@@ -152,7 +152,7 @@ def create_link_token():
                 client_user_id=user_id
             ),
             client_name="Fynn",
-            products=[Products("auth"), Products("transactions"), Products("liabilities")],
+            products=[Products("auth"), Products("transactions"), Products("liabilities"), Products("investments")],
             country_codes=[CountryCode('US')],
             language='en',
             redirect_uri=PLAID_REDIRECT_URI

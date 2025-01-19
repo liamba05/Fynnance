@@ -1,5 +1,5 @@
 from plaid.api import plaid_api
-from plaid import ApiClient
+from plaid.api_client import ApiClient
 from plaid.configuration import Configuration
 from plaid.model.link_token_create_request import LinkTokenCreateRequest
 from plaid.model.products import Products
