@@ -1,0 +1,269 @@
+.goalsTips {
+  height: 91px;
+  width: 1183px;
+  position: absolute;
+  margin: 0 !important;
+  top: 103px;
+  left: 48px;
+  font-size: 50px;
+  letter-spacing: 0.2em;
+  font-weight: 500;
+  font-family: var(--standard-text-light);
+  color: var(--color-black);
+  text-align: center;
+  display: inline-block;
+}
+.accountSummary {
+  margin: 0 !important;
+  position: absolute;
+  top: 62px;
+  right: 36.4px;
+  font-size: inherit;
+  letter-spacing: 0.1em;
+  font-weight: 500;
+  font-family: inherit;
+  white-space: nowrap;
+}
+.trendingUpIcon {
+  height: 63px;
+  width: 66px;
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.trending {
+  width: 232px;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 0px var(--padding-xl);
+  box-sizing: border-box;
+}
+.searchArea {
+  border: none;
+  background-color: transparent;
+  flex: 1;
+  font-family: var(--standard-text-light);
+  font-weight: 600;
+  font-size: var(--standard-text-light-size);
+  color: var(--color-dimgray);
+  max-width: 100%;
+}
+.messageBar {
+  align-self: stretch;
+  flex: 1;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  border-radius: var(--br-xl);
+  background-color: var(--mint-green-light);
+  border: 1px solid var(--color-lightgreen-200);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: var(--padding-xs) var(--padding-3xl) var(--padding-xs) 25px;
+  max-width: 100%;
+}
+.up {
+  align-self: stretch;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: var(--gap-37xl);
+  max-width: 100%;
+}
+.trend {
+  align-self: stretch;
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 0px var(--padding-8xs);
+  box-sizing: border-box;
+  max-width: 100%;
+}
+.questionTemplate {
+  position: relative;
+  font-weight: 600;
+}
+.questionCardTemplate {
+  margin-top: -55px;
+  flex: 1;
+  border-radius: var(--br-xl);
+  background-color: var(--mint-green-light);
+  border: 1px solid var(--color-lightgreen-200);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: var(--padding-84xl) var(--padding-9xl);
+  max-width: calc(100% - 412px);
+}
+.questionTemplate1 {
+  position: relative;
+  display: none;
+}
+.questionCardTemplate1 {
+  margin-top: -55px;
+  height: 236px;
+  width: 354px;
+  border-radius: var(--br-xl);
+  background-color: var(--mint-green-light);
+  border: 1px solid var(--color-lightgreen-200);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  padding: var(--padding-mid) var(--padding-9xl);
+  font-family: var(--font-kantumruy);
+}
+.questionRow {
+  align-self: stretch;
+  height: 126px;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 0px var(--padding-mid);
+  box-sizing: border-box;
+  gap: var(--gap-39xl);
+  opacity: 0.9;
+  max-width: 100%;
+}
+.questions {
+  align-self: stretch;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 144px;
+  max-width: 100%;
+}
+.page {
+  height: 844px;
+  width: 801.2px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 109px 0px 0px;
+  box-sizing: border-box;
+  max-width: calc(100% - 221px);
+  text-align: left;
+  font-size: var(--standard-text-light-size);
+  color: var(--color-white);
+}
+.goalstipsAccountSummaryChild {
+  height: 1120px;
+  width: 3px;
+  position: relative;
+  border-right: 3px solid var(--color-lightgreen-100);
+  box-sizing: border-box;
+}
+.goalstipsAccountSummary {
+  width: 100%;
+  height: 1117px;
+  position: relative;
+  background-color: var(--color-white);
+  overflow: hidden;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 0px 212px;
+  box-sizing: border-box;
+  gap: 218px;
+  line-height: normal;
+  letter-spacing: normal;
+  text-align: center;
+  font-size: var(--font-size-21xl);
+  color: var(--color-black);
+  font-family: var(--standard-text-light);
+}
+
+@media screen and (max-width: 1200px) {
+  .goalstipsAccountSummary {
+    gap: 109px;
+    padding-left: var(--padding-87xl);
+    padding-right: var(--padding-87xl);
+    box-sizing: border-box;
+  }
+}
+@media screen and (max-width: 1050px) {
+  .goalsTips {
+    font-size: var(--font-size-21xl);
+  }
+
+  .accountSummary {
+    font-size: 32px;
+  }
+
+  .questions {
+    gap: 72px;
+  }
+
+  .page {
+    padding-top: var(--padding-52xl);
+    box-sizing: border-box;
+  }
+}
+@media screen and (max-width: 750px) {
+  .page {
+    max-width: 100%;
+  }
+
+  .goalstipsAccountSummaryChild {
+    display: none;
+  }
+
+  .goalstipsAccountSummary {
+    gap: 54px;
+    padding-left: var(--padding-34xl);
+    padding-right: var(--padding-34xl);
+    box-sizing: border-box;
+  }
+}
+@media screen and (max-width: 450px) {
+  .goalsTips {
+    font-size: var(--font-size-11xl);
+  }
+
+  .accountSummary {
+    font-size: var(--font-size-5xl);
+  }
+
+  .up {
+    gap: 28px;
+  }
+
+  .questionTemplate {
+    font-size: var(--font-size-base);
+  }
+
+  .questionRow {
+    gap: var(--gap-10xl);
+  }
+
+  .questions {
+    gap: var(--gap-17xl);
+  }
+
+  .page {
+    padding-top: 46px;
+    box-sizing: border-box;
+  }
+
+  .goalstipsAccountSummary {
+    gap: 27px;
+    padding-left: var(--padding-xl);
+    padding-right: var(--padding-xl);
+    box-sizing: border-box;
+  }
+}

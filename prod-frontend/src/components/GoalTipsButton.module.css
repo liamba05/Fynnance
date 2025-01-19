@@ -1,0 +1,25 @@
+.trendingUpIcon {
+  height: 36px;
+  width: 36px;
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.goalsTips {
+  width: 147px;
+  position: relative;
+  display: inline-block;
+}
+.goaltipsButton {
+  align-self: stretch;
+  height: 36px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: var(--gap-base);
+  text-align: left;
+  font-size: var(--standard-text-light-size);
+  color: var(--color-black);
+  font-family: var(--standard-text-light);
+}

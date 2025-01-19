@@ -1,0 +1,14 @@
+.questionCardTemplate {
+  height: 114px;
+  width: 354px;
+}
+.questionRow {
+  width: 801.2px;
+  height: 126px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: var(--gap-39xl);
+  z-index: 1;
+}

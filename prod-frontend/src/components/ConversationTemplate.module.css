@@ -1,0 +1,48 @@
+.conversationTemplateChild {
+  position: absolute;
+  height: 6.06%;
+  width: 4.18%;
+  top: 30.3%;
+  right: 92.93%;
+  bottom: 63.64%;
+  left: 2.89%;
+  border-top: 2px solid var(--color-black);
+  box-sizing: border-box;
+}
+.conversationTemplateItem {
+  position: absolute;
+  height: 6.06%;
+  width: 4.18%;
+  top: 45.45%;
+  right: 92.93%;
+  bottom: 48.48%;
+  left: 2.89%;
+  border-top: 2px solid var(--color-black);
+  box-sizing: border-box;
+}
+.messageSquareIcon {
+  position: absolute;
+  height: 96.97%;
+  width: 10.29%;
+  top: 0%;
+  right: 89.71%;
+  bottom: 3.03%;
+  left: 0%;
+  max-width: 100%;
+  overflow: hidden;
+  max-height: 100%;
+}
+.conversationTemplate1 {
+  position: absolute;
+  top: 0%;
+  left: 11.9%;
+}
+.conversationTemplate {
+  align-self: stretch;
+  position: relative;
+  height: 33px;
+  text-align: left;
+  font-size: var(--standard-text-light-size);
+  color: var(--color-black);
+  font-family: var(--standard-text-light);
+}

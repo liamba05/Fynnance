@@ -1,0 +1,31 @@
+.fynn {
+  text-decoration: none;
+  height: 40px;
+  width: 133px;
+  position: relative;
+  letter-spacing: 0.5em;
+  color: inherit;
+  display: inline-block;
+  flex-shrink: 0;
+}
+.fynn100X100PxRectangle {
+  margin-top: -244px;
+  width: 193px;
+  height: 215px;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: var(--padding-135xl) var(--padding-7xl) var(--padding-2xl)
+    var(--padding-16xl);
+  box-sizing: border-box;
+  background-image: url("/public/fynn-100-x-100-px-rectangle-sticker-portrait-2@3x.png");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: top;
+  opacity: 0.75;
+  text-align: left;
+  font-size: var(--font-size-11xl);
+  color: var(--color-black);
+  font-family: var(--standard-text-light);
+}

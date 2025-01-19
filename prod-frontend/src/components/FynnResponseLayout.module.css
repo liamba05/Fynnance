@@ -1,0 +1,19 @@
+.fynnResponseLayout {
+  position: absolute;
+  top: 0px;
+  left: 93px;
+  width: 750px;
+  height: 163px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: var(--padding-31xl) var(--padding-231xl) var(--padding-31xl)
+    var(--padding-3xs);
+  box-sizing: border-box;
+  text-align: left;
+  font-size: var(--standard-text-light-size);
+  color: var(--color-gray-100);
+  font-family: var(--font-kantumruy);
+}

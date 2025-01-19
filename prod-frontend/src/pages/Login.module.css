@@ -1,0 +1,314 @@
+.fynnLogin {
+  margin: 0;
+  height: 105px;
+  flex: 1;
+  position: relative;
+  font-size: inherit;
+  font-weight: 400;
+  font-family: inherit;
+  display: inline-block;
+  max-width: 100%;
+}
+.fynnLoginWrapper {
+  align-self: stretch;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 0px 0px 0px var(--padding-5xs);
+  box-sizing: border-box;
+  max-width: 100%;
+}
+.inputArea {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: var(--gap-2xs);
+  max-width: 100%;
+}
+.inputAreaWrapper {
+  align-self: stretch;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: flex-end;
+  padding: 0px var(--padding-9xs) 0px 0px;
+  box-sizing: border-box;
+  max-width: 100%;
+}
+.loginButton {
+  height: 33px;
+  width: 295px;
+}
+.loginOptions {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 0px var(--padding-26xl);
+}
+.frameChild {
+  height: 1px;
+  flex: 1;
+  position: relative;
+  border-top: 1px solid var(--color-black);
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+.or {
+  width: 382px;
+  position: absolute;
+  margin: 0 !important;
+  top: 0px;
+  left: 0px;
+  font-size: var(--font-size-lg);
+  font-family: var(--standard-text-light);
+  color: var(--color-black);
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.lineParent {
+  align-self: stretch;
+  overflow: hidden;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: var(--padding-2xs) 0px;
+  position: relative;
+  gap: 50px;
+}
+.googleLogo98081Icon {
+  height: 22px;
+  width: 20px;
+  position: relative;
+  object-fit: cover;
+}
+.continueWithGoogle {
+  align-self: stretch;
+  position: relative;
+  font-size: var(--font-size-mini);
+  font-family: var(--standard-text-light);
+  color: var(--color-black);
+  text-align: center;
+}
+.googleLogin {
+  width: 199px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 3.5px 0px 0px;
+  box-sizing: border-box;
+}
+.frame {
+  flex: 1;
+  border-radius: var(--br-xl);
+  background-color: rgba(151, 229, 139, 0.77);
+  overflow: hidden;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 5.5px var(--padding-mid);
+  gap: var(--gap-base);
+}
+.loginOptions1 {
+  align-self: stretch;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 0px var(--padding-26xl);
+}
+.loginOptionsParent {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 14px;
+  max-width: 100%;
+}
+.frameGroup {
+  margin: 0;
+  width: 394px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: flex-start;
+  gap: 21.5px;
+  max-width: 100%;
+}
+.frameParent {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 52px;
+  max-width: 100%;
+}
+.dontHaveAn {
+  flex: 1;
+  position: relative;
+  -webkit-text-stroke: 1px #000;
+}
+.signUp {
+  position: relative;
+  text-align: left;
+  display: inline-block;
+  text-shadow: 0.5px 0 0 #97e58b, 0 0.5px 0 #97e58b, -0.5px 0 0 #97e58b,
+    0 -0.5px 0 #97e58b;
+  min-width: 73px;
+  cursor: pointer;
+}
+.signupLink {
+  width: 282px;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+.signupLinkWrapper {
+  align-self: stretch;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 0px var(--padding-49xl) 0px 60px;
+  text-align: center;
+  font-size: var(--font-size-mini);
+  font-family: var(--standard-text-light);
+}
+.loginPopUp {
+  flex: 1;
+  backdrop-filter: blur(4px);
+  border-radius: var(--br-6xl);
+  background-color: var(--color-white);
+  border: 1.5px solid var(--color-black);
+  box-sizing: border-box;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: var(--padding-xs) 55px var(--padding-2xs) var(--padding-44xl);
+  gap: 175px;
+  max-width: 100%;
+}
+.loginPopUpWrapper {
+  align-self: stretch;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 0px var(--padding-510xl);
+  box-sizing: border-box;
+  max-width: 100%;
+  flex-shrink: 0;
+  text-align: left;
+  font-size: 85px;
+  color: var(--color-black);
+  font-family: var(--font-kantumruy);
+}
+.login1 {
+  width: 100%;
+  height: 1117px;
+  position: relative;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  background: linear-gradient(90deg, #f0f9ef 19%, #6ebb61 74%);
+  border: 1px solid var(--color-black);
+  box-sizing: border-box;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: var(--padding-209xl) var(--padding-49xl) var(--padding-189xl);
+  gap: 39px;
+  opacity: 0.9;
+  line-height: normal;
+  letter-spacing: normal;
+}
+
+@media screen and (max-width: 1200px) {
+  .loginPopUpWrapper {
+    padding-left: var(--padding-245xl);
+    padding-right: var(--padding-245xl);
+    box-sizing: border-box;
+  }
+}
+@media screen and (max-width: 1050px) {
+  .fynnLogin {
+    font-size: 42px;
+  }
+
+  .login1 {
+    padding-left: var(--padding-15xl);
+    padding-right: var(--padding-15xl);
+    box-sizing: border-box;
+  }
+}
+@media screen and (max-width: 750px) {
+  .loginPopUp {
+    gap: 87px;
+    padding-left: var(--padding-12xl);
+    padding-right: var(--padding-8xl);
+    box-sizing: border-box;
+  }
+
+  .loginPopUpWrapper {
+    padding-left: var(--padding-113xl);
+    padding-right: var(--padding-113xl);
+    box-sizing: border-box;
+  }
+}
+@media screen and (max-width: 450px) {
+  .fynnLogin {
+    font-size: 25px;
+  }
+
+  .loginOptions {
+    padding-left: var(--padding-xl);
+    padding-right: var(--padding-xl);
+    box-sizing: border-box;
+  }
+
+  .lineParent {
+    gap: var(--gap-6xl);
+  }
+
+  .loginOptions1 {
+    padding-left: var(--padding-xl);
+    padding-right: var(--padding-xl);
+    box-sizing: border-box;
+  }
+
+  .frameParent {
+    gap: 26px;
+  }
+
+  .signupLinkWrapper {
+    padding-left: var(--padding-xl);
+    padding-right: var(--padding-xl);
+    box-sizing: border-box;
+  }
+
+  .loginPopUp {
+    gap: 44px;
+  }
+
+  .loginPopUpWrapper {
+    padding-left: var(--padding-xl);
+    padding-right: var(--padding-xl);
+    box-sizing: border-box;
+  }
+
+  .login1 {
+    gap: var(--gap-lgi);
+  }
+}

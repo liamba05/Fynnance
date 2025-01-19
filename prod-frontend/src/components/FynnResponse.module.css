@@ -1,0 +1,20 @@
+.fynnResponse1 {
+  height: 36px;
+  width: 146px;
+  position: relative;
+  display: inline-block;
+}
+.fynnResponse {
+  background-color: var(--color-gray-200);
+  overflow: hidden;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  padding: var(--padding-8xs);
+  gap: var(--gap-2xs);
+  text-align: left;
+  font-size: var(--standard-text-light-size);
+  color: var(--color-gray-100);
+  font-family: var(--font-kantumruy);
+}

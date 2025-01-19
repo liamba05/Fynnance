@@ -1,0 +1,25 @@
+.fynn100X100PxRectangleWrapper {
+  width: 496.6px;
+  height: 123px;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 0px 0px 0px var(--padding-284xl-6);
+  box-sizing: border-box;
+  z-index: 2;
+}
+.defaultChatDesign {
+  position: absolute;
+  top: 113px;
+  left: 0px;
+  width: 876px;
+  height: 590px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: var(--padding-102xl) var(--padding-18xl-4) var(--padding-64xl);
+  box-sizing: border-box;
+  gap: var(--gap-118xl);
+}

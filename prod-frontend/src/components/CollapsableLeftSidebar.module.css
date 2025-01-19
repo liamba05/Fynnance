@@ -1,0 +1,23 @@
+.collapsableLeftSidebarChild {
+  position: absolute;
+  height: 100.27%;
+  width: 0.76%;
+  top: 0%;
+  right: 0%;
+  bottom: -0.27%;
+  left: 99.24%;
+  border-right: 3px solid var(--color-lightgreen-100);
+  box-sizing: border-box;
+}
+.collapsableLeftSidebar {
+  align-self: stretch;
+  height: 1117px;
+  position: relative;
+  background-color: var(--color-gray-200);
+  overflow: hidden;
+  flex-shrink: 0;
+  text-align: left;
+  font-size: var(--standard-text-light-size);
+  color: var(--color-black);
+  font-family: var(--font-heebo);
+}

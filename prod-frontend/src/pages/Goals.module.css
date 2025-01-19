@@ -1,0 +1,349 @@
+.fynnLogin {
+  margin: 0;
+  height: 105px;
+  flex: 1;
+  position: relative;
+  font-size: inherit;
+  font-weight: 400;
+  font-family: inherit;
+  display: inline-block;
+  max-width: 100%;
+}
+.fynnLoginWrapper {
+  align-self: stretch;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 0px var(--padding-12xs) 0px var(--padding-11xs);
+  box-sizing: border-box;
+  max-width: 100%;
+}
+.goals {
+  position: relative;
+  letter-spacing: 0.2em;
+}
+.inputs {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 38px var(--padding-9xs);
+  box-sizing: border-box;
+  min-height: 162px;
+  max-width: 100%;
+  z-index: 1;
+}
+.goalField {
+  align-self: stretch;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 0px 0px 0px var(--padding-11xs);
+  box-sizing: border-box;
+  max-width: 100%;
+}
+.textBox {
+  border: 1px solid var(--color-black);
+  background-color: var(--color-white);
+  height: 141px;
+  width: auto;
+  outline: none;
+  align-self: stretch;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 10px;
+  box-sizing: border-box;
+  overflow: hidden;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: var(--padding-7xs);
+  font-family: var(--font-heebo);
+  font-size: var(--standard-text-light-size);
+  color: var(--color-black);
+  z-index: 2;
+  margin-top: -98px;
+}
+.inputFields {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  max-width: 100%;
+}
+.submitButton {
+  align-self: stretch;
+  height: 27px;
+  cursor: pointer;
+  z-index: 1;
+}
+.back1 {
+  margin: 0;
+}
+.back {
+  flex: 1;
+  position: relative;
+}
+.union1Icon {
+  height: 8px;
+  width: 7px;
+  position: absolute;
+  margin: 0 !important;
+  bottom: 0px;
+  left: 22px;
+  object-fit: contain;
+}
+.backParent {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: flex-start;
+  position: relative;
+}
+.backFrame {
+  width: 110px;
+  overflow: hidden;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: var(--padding-7xs) 0px;
+  box-sizing: border-box;
+  cursor: pointer;
+  z-index: 1;
+}
+.skip {
+  flex: 1;
+  position: relative;
+  flex-shrink: 0;
+}
+.union1Icon1 {
+  height: 9.4px;
+  width: 17.2px;
+  position: relative;
+  flex-shrink: 0;
+}
+.skipParent {
+  width: 127.2px;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: flex-start;
+  flex-shrink: 0;
+}
+.union1Icon2 {
+  height: 8px;
+  width: 7px;
+  position: absolute;
+  margin: 0 !important;
+  right: 22px;
+  bottom: 6px;
+  z-index: 1;
+}
+.skipFrame {
+  width: 110px;
+  overflow: hidden;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: var(--padding-7xs) 0px;
+  box-sizing: border-box;
+  position: relative;
+  cursor: pointer;
+  z-index: 1;
+}
+.backFrameParent {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--gap-xl);
+}
+.navigation {
+  align-self: stretch;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 0px var(--padding-11xs);
+}
+.buttonContainer {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: var(--gap-lg);
+}
+.submission {
+  width: 369px;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 0px 37px;
+  box-sizing: border-box;
+  max-width: 100%;
+  text-align: center;
+  font-size: var(--font-size-lg);
+  font-family: var(--standard-text-light);
+}
+.inputContainer {
+  width: 395px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 34px;
+  max-width: 100%;
+  font-size: var(--standard-text-light-size);
+  font-family: var(--font-heebo);
+}
+.inputPopUp {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: var(--padding-3xs) var(--padding-5xs) 114px;
+  box-sizing: border-box;
+  gap: 47px;
+  max-width: 100%;
+}
+.registrationInputs {
+  flex: 1;
+  backdrop-filter: blur(4px);
+  border-radius: var(--br-6xl);
+  background-color: var(--color-white);
+  border: 1.5px solid var(--color-black);
+  box-sizing: border-box;
+  overflow: hidden;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: var(--padding-2xl) var(--padding-44xl);
+  min-height: 677px;
+  max-width: 100%;
+}
+.registrationInputsWrapper {
+  align-self: stretch;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 0px 509px 0px var(--padding-510xl);
+  box-sizing: border-box;
+  max-width: 100%;
+  flex-shrink: 0;
+  max-height: 100%;
+  overflow: auto;
+}
+.goals1 {
+  width: 100%;
+  height: 1117px;
+  position: relative;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  background: linear-gradient(90deg, #f0f9ef 19%, #6ebb61 74%);
+  border: 1px solid var(--color-black);
+  box-sizing: border-box;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: var(--padding-189xl) var(--padding-49xl) var(--padding-209xl);
+  gap: var(--gap-lgi);
+  opacity: 0.9;
+  line-height: normal;
+  letter-spacing: normal;
+  text-align: left;
+  font-size: var(--font-size-61xl);
+  color: var(--color-black);
+  font-family: var(--font-kantumruy);
+}
+
+@media screen and (max-width: 1200px) {
+  .registrationInputsWrapper {
+    padding-left: var(--padding-245xl);
+    padding-right: 254px;
+    box-sizing: border-box;
+  }
+}
+@media screen and (max-width: 1050px) {
+  .fynnLogin {
+    font-size: var(--font-size-21xl);
+  }
+
+  .goals1 {
+    padding-left: var(--padding-15xl);
+    padding-right: var(--padding-15xl);
+    box-sizing: border-box;
+  }
+}
+@media screen and (max-width: 750px) {
+  .backFrameParent {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .inputPopUp {
+    padding-top: var(--padding-xl);
+    padding-bottom: 74px;
+    box-sizing: border-box;
+  }
+
+  .registrationInputs {
+    padding: var(--padding-xl) var(--padding-12xl);
+    box-sizing: border-box;
+  }
+
+  .registrationInputsWrapper {
+    padding-left: var(--padding-113xl);
+    padding-right: 127px;
+    box-sizing: border-box;
+  }
+
+  .goals1 {
+    height: auto;
+  }
+}
+@media screen and (max-width: 450px) {
+  .fynnLogin {
+    font-size: var(--font-size-5xl);
+  }
+
+  .goals {
+    font-size: var(--font-size-base);
+  }
+
+  .submitButton {
+    padding-left: var(--padding-xl);
+    padding-right: var(--padding-xl);
+    box-sizing: border-box;
+  }
+
+  .inputContainer {
+    gap: 17px;
+  }
+
+  .inputPopUp {
+    gap: var(--gap-4xl);
+  }
+
+  .registrationInputsWrapper {
+    padding-left: var(--padding-xl);
+    padding-right: var(--padding-xl);
+    box-sizing: border-box;
+  }
+}
