@@ -1,8 +1,18 @@
 from openai import OpenAI
 import json
-from functions import function_registry 
+from tools_list import function_registry 
+import os
+import sys
 
-client = OpenAI(api_key="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")
+# add to path so we can import other functions
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+# import the API key manager
+from EncryptionKeyStorage.API_key_manager import APIKeyManager
+os.environ['GOOGLE_CLOUD_PROJECT'] = '258766016727'
+api_key_manager = APIKeyManager()
+
+client = OpenAI(api_key=api_key_manager.get_api_key('openai'))
 
 # Build the tools list from function registry
 tools = []
@@ -29,9 +39,16 @@ def execute_function(name, args):
 
 def initialize_chat():
     """Return the initial messages object for the start of the chat. """
-    return [{"role": "developer", "content": "You are Fynn, an all-around financial analyst for the user's financing, budgeting, and investments. You will provide the user with financial advice and information. \
+    # add the initial developer prompt
+    messages = [{"role": "developer", "content": "You are Fynn, an all-around financial analyst for the user's financing, budgeting, and investments. You will provide the user with financial advice and information. \
              At any point, if you need more information to make a tools/function call, ask the user and make the call after. Do not make a call early, you can ask the user follow-up questions to get the necessary information.\
              ONLY MAKE A CALL FOR A FUNCTION THAT EXISTS, do not offer to get data on information that you cannot access or will cause an API error."}]
+    
+    # @LIAM HERE WE CAN ADD ANY OTHER INITIAL MESSAGES WE WANT TO START THE CHAT
+    # WE CAN PULL SIMPLE STRINGS FORM FIREBASE, AND THEN ADD TO THE MESSAGES OBJECT:
+    # messages.append({"role": "developer", "content": "The user has provided their goals: xxxxx. Make sure to refer to them throughout the conversation."})
+    # messages.append({"role": "developer", "content": "The user would prefer responses that are of style xxxx."})
+    return messages
 
 def get_response(messages):
     """Get a response from GPT with function calling skills.
