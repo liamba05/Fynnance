@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fynn - Test Frontend</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Firebase App (the core Firebase SDK) -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <!-- Add Firebase products that you want to use -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <!-- Plaid Link script -->
+    <script src="https://cdn.plaid.com/link/v2/stable/link-initialize.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div id="loginSection">
+            <h2>Login</h2>
+            <form id="loginForm">
+                <input type="email" id="loginEmail" placeholder="Email" required>
+                <input type="password" id="loginPassword" placeholder="Password" required>
+                <button type="submit">Login</button>
+            </form>
+            <p>Don't have an account? <a href="#" id="showRegister">Register</a></p>
+        </div>
+
+        <div id="registerSection" style="display: none;">
+            <h2>Create Account</h2>
+            <form id="registerForm">
+                <input type="text" id="firstName" placeholder="First Name" required>
+                <input type="text" id="lastName" placeholder="Last Name" required>
+                <input type="email" id="registerEmail" placeholder="Email" required>
+                <input type="password" id="registerPassword" placeholder="Password" required>
+                <input type="date" id="dateOfBirth" required>
+                <input type="number" id="income" placeholder="Annual Income" required>
+                <input type="number" id="assets" placeholder="Total Assets" required>
+                <input type="text" id="zipCode" placeholder="Zip Code" required>
+                <button type="submit">Register</button>
+            </form>
+            <p>Already have an account? <a href="#" id="showLogin">Login</a></p>
+        </div>
+
+        <div id="dashboardSection" style="display: none;">
+            <h2>Dashboard</h2>
+            <p>Welcome, <span id="userDisplay"></span>!</p>
+            <button id="plaidButton">Connect to Plaid</button>
+            <button id="logoutButton">Logout</button>
+        </div>
+    </div>
+
+    <!-- Initialize Firebase -->
+    <script>
+        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+        const firebaseConfig = {
+            apiKey: "AIzaSyDfqtiZe5JTow-Zfa23QTaW5W_9eIuLzBg",
+            authDomain: "fynnance-5031a.firebaseapp.com",
+            projectId: "fynnance-5031a",
+            storageBucket: "fynnance-5031a.firebasestorage.app",
+            messagingSenderId: "258766016727",
+            appId: "1:258766016727:web:3109e527f2249b661d6092",
+            measurementId: "G-3FD2DRE0FS"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+
+        // Make Firebase services available globally
+        window.auth = firebase.auth();
+        window.db = firebase.firestore();
+
+        // Debug info
+        console.log('Firebase initialized');
+        auth.onAuthStateChanged((user) => {
+            console.log('Initial auth state:', user ? 'logged in' : 'logged out');
+        });
+    </script>
+    <script src="app.js"></script>
+</body>
+</html> 

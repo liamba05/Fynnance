@@ -34,7 +34,7 @@ class APIKeyManager:
     def _get_secret(self, secret_name: str) -> str:
         """Retrieve a secret from Google Cloud Secret Manager."""
         try:
-            name = f"projects/{os.getenv('GOOGLE_CLOUD_PROJECT')}/secrets/{secret_name}/versions/latest"
+            name = f"projects/258766016727/secrets/{secret_name}/versions/latest"
             response = self.secret_client.access_secret_version(request={"name": name})
             return response.payload.data.decode("UTF-8")
         except Exception as e:
