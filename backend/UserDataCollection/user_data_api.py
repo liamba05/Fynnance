@@ -261,5 +261,58 @@ def set_assets():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+# GPT Data endpoints
+@app.route('/api/user/goals', methods=['GET'])
+@require_auth
+def get_goals():
+    try:
+        user_data = UserDataCollection()
+        return jsonify({'goals': user_data.get_goals()})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/user/goals', methods=['POST'])
+@require_auth
+def set_goals():
+    try:
+        data = request.get_json()
+        if 'goals' not in data:
+            return jsonify({'error': 'Goals are required'}), 400
+            
+        goals = str(data['goals'])
+        user_data = UserDataCollection()
+        user_data.set_goals(goals)
+        return jsonify({'message': 'Goals updated successfully'})
+    except ValueError as e:
+        return jsonify({'error': str(e)}), 400
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/user/preferences', methods=['GET'])
+@require_auth
+def get_preferences():
+    try:
+        user_data = UserDataCollection()
+        return jsonify({'preferences': user_data.get_preferences()})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/user/preferences', methods=['POST'])
+@require_auth
+def set_preferences():
+    try:
+        data = request.get_json()
+        if 'preferences' not in data:
+            return jsonify({'error': 'Preferences are required'}), 400
+            
+        preferences = str(data['preferences'])
+        user_data = UserDataCollection()
+        user_data.set_preferences(preferences)
+        return jsonify({'message': 'Preferences updated successfully'})
+    except ValueError as e:
+        return jsonify({'error': str(e)}), 400
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5002, debug=True) 

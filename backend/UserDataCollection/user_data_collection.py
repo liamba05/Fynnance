@@ -185,3 +185,73 @@ class UserDataCollection:
         self.db.collection('users').document(user_id).set({
             'date_of_birth': dob
         }, merge=True)
+
+    # GPT Data getters
+    def get_goals(self) -> str:
+        """Get user's goals."""
+        user_id = self._get_current_user_id()
+        doc = self.db.collection('users').document(user_id).collection('gpt_data').document('goals').get()
+        if not doc.exists:
+            return ""
+        return doc.get('set_goals', "")
+
+    def get_preferences(self) -> str:
+        """Get user's preferences."""
+        user_id = self._get_current_user_id()
+        doc = self.db.collection('users').document(user_id).collection('gpt_data').document('preferences').get()
+        if not doc.exists:
+            return ""
+        return doc.get('preferences', "")
+
+    def get_memories(self) -> str:
+        """Get user's memories. Internal use only."""
+        user_id = self._get_current_user_id()
+        doc = self.db.collection('users').document(user_id).collection('gpt_data').document('memories').get()
+        if not doc.exists:
+            return ""
+        return doc.get('memories', "")
+
+    def get_conclusions(self) -> str:
+        """Get user's conclusions. Internal use only."""
+        user_id = self._get_current_user_id()
+        doc = self.db.collection('users').document(user_id).collection('gpt_data').document('conclusions').get()
+        if not doc.exists:
+            return ""
+        return doc.get('conclusions', "")
+
+    # GPT Data setters
+    def set_goals(self, goals: str) -> None:
+        """Set user's goals."""
+        if not goals or not goals.strip():
+            raise ValueError("Goals cannot be empty")
+        user_id = self._get_current_user_id()
+        self.db.collection('users').document(user_id).collection('gpt_data').document('goals').set({
+            'set_goals': goals
+        }, merge=True)
+
+    def set_preferences(self, preferences: str) -> None:
+        """Set user's preferences."""
+        if not preferences or not preferences.strip():
+            raise ValueError("Preferences cannot be empty")
+        user_id = self._get_current_user_id()
+        self.db.collection('users').document(user_id).collection('gpt_data').document('preferences').set({
+            'preferences': preferences
+        }, merge=True)
+
+    def set_memories(self, memories: str) -> None:
+        """Set user's memories. Internal use only."""
+        if not memories or not memories.strip():
+            raise ValueError("Memories cannot be empty")
+        user_id = self._get_current_user_id()
+        self.db.collection('users').document(user_id).collection('gpt_data').document('memories').set({
+            'memories': memories
+        }, merge=True)
+
+    def set_conclusions(self, conclusions: str) -> None:
+        """Set user's conclusions. Internal use only."""
+        if not conclusions or not conclusions.strip():
+            raise ValueError("Conclusions cannot be empty")
+        user_id = self._get_current_user_id()
+        self.db.collection('users').document(user_id).collection('gpt_data').document('conclusions').set({
+            'conclusions': conclusions
+        }, merge=True)
