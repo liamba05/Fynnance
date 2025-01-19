@@ -337,7 +337,7 @@
 
 .navigationButtons {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   align-items: center;
   margin-top: 24px;
   width: 100%;
@@ -354,6 +354,17 @@
 
 .skipButton:hover {
   text-decoration: underline;
+}
+
+.plaidButton {
+  margin-left: auto;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.plaidButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 @media screen and (max-width: 900px) {
@@ -401,4 +412,12 @@
   .financialInfo {
     height: auto;
   }
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: white;
 }

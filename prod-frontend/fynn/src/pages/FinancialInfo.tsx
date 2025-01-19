@@ -6,9 +6,11 @@ import { useNavigate } from "react-router-dom";
 import styles from "./FinancialInfo.module.css";
 import fynnLogo from '../assets/fynn-100-x-100-px-rectangle-sticker-portrait-2@3x.png';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import IncomeSelect from "../components/incomeSelect/IncomeSelect";
+import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
+import { initializePlaid } from '../services/plaidService';
 
 function FinancialInfo() {
+  
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     income: "",
@@ -37,6 +39,10 @@ function FinancialInfo() {
 
   const handleSkip = () => {
     navigate("/goals");
+  };
+
+  const handlePlaidConnect = () => {
+    initializePlaid().catch(console.error);
   };
 
   return (
@@ -110,6 +116,24 @@ function FinancialInfo() {
               <span>Skip</span>
               <ArrowBackIcon sx={{ fontSize: 20, marginLeft: '8px', transform: 'rotate(180deg)' }} />
             </div>
+            <Button
+              id="plaidButton"
+              variant="contained"
+              startIcon={<AccountBalanceIcon />}
+              onClick={handlePlaidConnect}
+              className={styles.plaidButton}
+              sx={{
+                background: "#9fdb95",
+                color: "#000",
+                textTransform: "none",
+                fontSize: "16px",
+                padding: "12px 24px",
+                borderRadius: "8px",
+                "&:hover": { background: "#8bc681" },
+              }}
+            >
+              Connect to Plaid
+            </Button>
           </div>
         </div>
       </section>

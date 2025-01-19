@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Button, IconButton, Menu, MenuItem } from "@mui/material";
 import styles from "./Chatbot.module.css";
 import EditIcon from '@mui/icons-material/Edit';
@@ -11,33 +11,44 @@ import PersonIcon from '@mui/icons-material/Person';
 import SettingsIcon from '@mui/icons-material/Settings';
 import Fynn100X100PxRectangle from "../components/Fynn100X100PxRectangle";
 import fynnLogo from '../assets/fynn-100-x-100-px-rectangle-sticker-portrait-2@3x.png';
-// import '@chatscope/chat-ui-kit-react-styles/dist/default/styles.min.css';
-// import { MainContainer, ChatContainer, MessageList, Message } from '@chatscope/chat-ui-kit-react';
+import { useChat } from 'ai/react';
+import {backendApiPreface} from '../App.tsx';
+// Allow streaming responses up to 30 seconds
+export const maxDuration = 30;
 
-interface ChatMessage {
-  sender: string;
-  message: string;
-  direction: string;
-}
+export const runtime = 'edge';
 
 function Chatbot() {
-  const [message, setMessage] = useState("");
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [menuText, setMenuText] = useState("Menu");
   const [showWelcome, setShowWelcome] = useState(true);
 
-  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
+  const { messages, input, handleInputChange, handleSubmit, setMessages, isLoading } = useChat({
+    api: `${backendApiPreface}/api/stream_gpt_response`,
+    onResponse: (response) => {
+      // Optional: Handle streaming response
+      if (response.status === 429) {
+        console.log('Rate limited!');
+        return;
+      }
+    },
+    onFinish: (message) => {
+      // Optional: Handle completion
+      console.log(message);
+      scrollToBottom();
+    },
+  });
 
-  const handleSubmit = async (message: string) => {
-    setShowWelcome(false);
-    const newMessage: ChatMessage = {
-      sender: "user",
-      message: message,
-      direction: "outgoing",
-    };
-    setChatMessages([...chatMessages, newMessage]);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
   const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -48,7 +59,10 @@ function Chatbot() {
     setAnchorEl(null);
   };
 
-
+  const handleNewChat = () => {
+    setMessages([]);
+    setShowWelcome(true);
+  };
 
   return (
     <div className={styles.chatbot}>
@@ -126,34 +140,37 @@ function Chatbot() {
           </div>
           {!showWelcome && (
             <div className={styles.chatMessages}>
-              <MainContainer>
-                <ChatContainer>
-                  <MessageList>
-                    {chatMessages.map((message, index) => (
-                      <Message key={index} model={{
-                        message: message.message,
-                        sender: message.sender,
-                        direction: message.direction
-                      }} />
-                    ))}
-                  </MessageList>
-                </ChatContainer>
-              </MainContainer>
+              {messages.map(message => (
+                <div 
+                  key={message.id} 
+                  className={styles.messageItem}
+                  data-role={message.role}
+                >
+                  <span className={styles.messageRole}>
+                    {message.role === 'user' ? 'You' : 'Fynn'}
+                  </span>
+                  <span>{message.content}</span>
+                </div>
+              ))}
+              <div ref={messagesEndRef} />
             </div>
           )}
         </div>
 
         {/* Message Input */}
-        <form onSubmit={() => handleSubmit(message)} className={styles.messageForm}>
+        <form 
+          onClick={() => setShowWelcome(false)}
+          onSubmit={handleSubmit} 
+          className={styles.messageForm}
+        >
           <input
             type="text"
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
+            value={input}
+            onChange={handleInputChange}
             placeholder="Type Message"
             className={styles.messageInput}
           />
-          <IconButton type="submit" className={styles.sendButton} 
-          onSubmit={() => handleSubmit(message)}>
+          <IconButton type="submit" className={styles.sendButton}>
             <SendIcon />
           </IconButton>
         </form>
@@ -166,6 +183,7 @@ function Chatbot() {
           startIcon={<EditIcon />}
           fullWidth
           variant="contained"
+          onClick={handleNewChat}
           sx={{
             background: "#9fdb95",
             color: "#000",
@@ -178,7 +196,6 @@ function Chatbot() {
           New Chat
         </Button>
         <div className={styles.sidebarContent}>
-          {/* Previous chats would go here */}
         </div>
       </div>
     </div>

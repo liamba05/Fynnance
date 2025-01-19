@@ -148,17 +148,5 @@ function App() {
     </Routes>
   );
 }
+export const backendApiPreface = "http://localhost:8000";
 export default App;
-
-{/* <Route path="/chatbot" element={<DefaultChatDesign />} />
-<Route path="/login" element={<DefaultChatDesign />} />
-<Route path="/signup" element={<DefaultChatDesign />} />
-<Route path="/register" element={<DefaultChatDesign />} />
-<Route path="/finances" element={<DefaultChatDesign />} />
-<Route path="/goals" element={<DefaultChatDesign />} />
-<Route path="/settings" element={<DefaultChatDesign />} />
-<Route path="/profile" element={<DefaultChatDesign />} />
-<Route path="/goal-sum" element={<DefaultChatDesign />} />
-// this will be the landing page, temp is the chatbot
-<Route path="/" element={<DefaultChatDesign />} /> */}
-
