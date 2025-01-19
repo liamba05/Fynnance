@@ -6,6 +6,18 @@ from functions import (
     get_top_headlines,
     get_top_news_about,
 )
+from UserDataCollection.user_data_collection import UserDataCollection
+from PlaidConnection.plaid_data_service import (
+    get_investment_holdings,
+    get_account_balances,
+    get_transactions,
+    get_user_financial_profile,
+    get_liabilities
+)
+from MarketDataConnection.estate_data_service import EstateDataService
+
+# Initialize EstateDataService for its methods
+estate_service = EstateDataService()
 
 # from MarketDataConnection.estate_data_service import (
 #     get_market_stats,
@@ -84,5 +96,226 @@ function_registry = {
             "additionalProperties": False
         }
     },
+    "get_user_income": {
+        "function": UserDataCollection().get_income,
+        "description": "Get the user's annual income.",
+        "parameters": {
+            "type": "object",
+            "properties": {},
+            "required": [],
+            "additionalProperties": False
+        }
+    },
+    "get_user_credit_score": {
+        "function": UserDataCollection().get_credit_score,
+        "description": "Get the user's credit score.",
+        "parameters": {
+            "type": "object",
+            "properties": {},
+            "required": [],
+            "additionalProperties": False
+        }
+    },
+    "get_user_zip_code": {
+        "function": UserDataCollection().get_zip_code,
+        "description": "Get the user's ZIP code.",
+        "parameters": {
+            "type": "object",
+            "properties": {},
+            "required": [],
+            "additionalProperties": False
+        }
+    },
+    "get_user_goals": {
+        "function": UserDataCollection().get_goals,
+        "description": "Get the user's financial goals and objectives.",
+        "parameters": {
+            "type": "object",
+            "properties": {},
+            "required": [],
+            "additionalProperties": False
+        }
+    },
+    "get_user_preferences": {
+        "function": UserDataCollection().get_preferences,
+        "description": "Get the user's financial preferences and risk tolerance.",
+        "parameters": {
+            "type": "object",
+            "properties": {},
+            "required": [],
+            "additionalProperties": False
+        }
+    },
+    "get_investment_holdings": {
+        "function": get_investment_holdings,
+        "description": "Get detailed investment holdings data including securities, values, and gain/loss information.",
+        "parameters": {
+            "type": "object",
+            "properties": {},
+            "required": [],
+            "additionalProperties": False
+        }
+    },
+    "get_account_balances": {
+        "function": get_account_balances,
+        "description": "Get current balances for all linked bank accounts.",
+        "parameters": {
+            "type": "object",
+            "properties": {},
+            "required": [],
+            "additionalProperties": False
+        }
+    },
+    "get_transactions": {
+        "function": get_transactions,
+        "description": "Get transaction history for a specified date range.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "start_date": {
+                    "type": "string",
+                    "description": "Start date in YYYY-MM-DD format. Defaults to 30 days ago if not provided."
+                },
+                "end_date": {
+                    "type": "string",
+                    "description": "End date in YYYY-MM-DD format. Defaults to today if not provided."
+                }
+            },
+            "required": [],
+            "additionalProperties": False
+        }
+    },
+    "get_liabilities": {
+        "function": get_liabilities,
+        "description": "Get the user's liabilities, including credit cards, student loans, and mortgages.",
+        "parameters": {
+            "type": "object",
+            "properties": {},
+            "required": [],
+            "additionalProperties": False
+        }
+    },
+    "get_user_financial_profile": {
+        "function": get_user_financial_profile,
+        "description": "Get a comprehensive financial profile including accounts, investments, transactions, and summary metrics.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "transactions_days": {
+                    "type": "integer",
+                    "description": "Number of days of transaction history to include (default: 30)",
+                    "default": 30
+                }
+            },
+            "required": [],
+            "additionalProperties": False
+        }
+    },
+    "get_market_stats": {
+        "function": estate_service.get_market_stats,
+        "description": "Get detailed real estate market statistics for a ZIP code area, including prices, rents, and market insights.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "property_type": {
+                    "type": "string",
+                    "description": "Type of property ('residential', 'multifamily', 'condo'). Defaults to residential.",
+                    "enum": ["residential", "multifamily", "condo"]
+                },
+                "zip_code": {
+                    "type": "string",
+                    "description": "ZIP code to analyze. If not provided, uses user's ZIP code."
+                }
+            },
+            "required": [],
+            "additionalProperties": False
+        }
+    },
+    "get_rental_listings": {
+        "function": estate_service.get_rental_listings,
+        "description": "Get available rental listings with market context and affordability analysis.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "max_price": {
+                    "type": "number",
+                    "description": "Maximum monthly rent. If not provided, calculated from user's income."
+                },
+                "min_beds": {
+                    "type": "integer",
+                    "description": "Minimum number of bedrooms required.",
+                    "default": 1
+                },
+                "zip_code": {
+                    "type": "string",
+                    "description": "ZIP code to search in. If not provided, uses user's ZIP code."
+                }
+            },
+            "required": [],
+            "additionalProperties": False
+        }
+    },
+    "get_property_listings": {
+        "function": estate_service.get_property_listings,
+        "description": "Get available properties for sale with market context and affordability analysis.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "max_price": {
+                    "type": "number",
+                    "description": "Maximum property price. If not provided, calculated from user's income."
+                },
+                "min_beds": {
+                    "type": "integer",
+                    "description": "Minimum number of bedrooms required.",
+                    "default": 2
+                },
+                "zip_code": {
+                    "type": "string",
+                    "description": "ZIP code to search in. If not provided, uses user's ZIP code."
+                }
+            },
+            "required": [],
+            "additionalProperties": False
+        }
+    },
+    "analyze_investment_potential": {
+        "function": estate_service.analyze_investment_potential,
+        "description": "Analyze the investment potential of a property with expected rental income.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "property_price": {
+                    "type": "number",
+                    "description": "Purchase price of the property."
+                },
+                "expected_rent": {
+                    "type": "number",
+                    "description": "Expected monthly rental income."
+                },
+                "zip_code": {
+                    "type": "string",
+                    "description": "ZIP code of the property. If not provided, uses user's ZIP code."
+                }
+            },
+            "required": ["property_price", "expected_rent"],
+            "additionalProperties": False
+        }
+    },
+    "get_affordability_analysis": {
+        "function": estate_service.get_affordability_analysis,
+        "description": "Get comprehensive affordability analysis based on user's income, credit score, and local market.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "zip_code": {
+                    "type": "string",
+                    "description": "ZIP code to analyze. If not provided, uses user's ZIP code."
+                }
+            },
+            "required": [],
+            "additionalProperties": False
+        }
+    }
 }
 
