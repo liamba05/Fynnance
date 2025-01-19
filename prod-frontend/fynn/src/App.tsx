@@ -25,4 +25,5 @@ function App() {
     </Routes>
   );
 }
+export const backendApiPreface = "http://localhost:8000";
 export default App;

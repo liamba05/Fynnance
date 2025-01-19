@@ -12,43 +12,32 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import Fynn100X100PxRectangle from "../components/Fynn100X100PxRectangle";
 import fynnLogo from '../assets/fynn-100-x-100-px-rectangle-sticker-portrait-2@3x.png';
 import { useChat } from 'ai/react';
-// import { openai } from '@ai-sdk/openai';
-// import { streamText } from 'ai';
-
+import {backendApiPreface} from '../App.tsx';
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 30;
 
-// export async function POST(req: Request) {
-//   const { messages } = await req.json();
-
-//   const result = streamText({
-//     model: openai('gpt-4-turbo'),
-//     system: 'You are a helpful assistant.',
-//     messages,
-//   });
-
-//   return result.toDataStreamResponse();
-// }
+export const runtime = 'edge';
 
 function Chatbot() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [menuText, setMenuText] = useState("Menu");
   const [showWelcome, setShowWelcome] = useState(true);
-  const mockResponses = [
-    "I understand what you're saying. Could you tell me more about that?",
-    "That's interesting! Let me help you with that.",
-    "I see. Here's what I think we could do...",
-    "Thanks for sharing. Based on what you've told me, I would suggest...",
-    "I'm analyzing your input. Here's my perspective on this matter..."
-  ];
 
-  const { messages, input, handleInputChange, setMessages } = useChat({
-    initialMessages: [
-      { id: '1', role: 'user', content: 'Hello!' },
-      { id: '2', role: 'assistant', content: 'Hi there! How can I help you today?' }
-    ],
-    api: '/api/chat'
+  const { messages, input, handleInputChange, handleSubmit, setMessages, isLoading } = useChat({
+    api: `${backendApiPreface}/api/stream_gpt_response`,
+    onResponse: (response) => {
+      // Optional: Handle streaming response
+      if (response.status === 429) {
+        console.log('Rate limited!');
+        return;
+      }
+    },
+    onFinish: (message) => {
+      // Optional: Handle completion
+      console.log(message);
+      scrollToBottom();
+    },
   });
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -73,27 +62,6 @@ function Chatbot() {
   const handleNewChat = () => {
     setMessages([]);
     setShowWelcome(true);
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!input.trim()) return;
-
-    // Add user message
-    const userMessage = { 
-      id: Date.now().toString(), 
-      role: 'user' as const, 
-      content: input 
-    };
-    
-    // Pick random mock response
-    const mockResponse = {
-      id: (Date.now() + 1).toString(),
-      role: 'assistant' as const,
-      content: mockResponses[Math.floor(Math.random() * mockResponses.length)]
-    };
-
-    setMessages([...messages, userMessage, mockResponse]);
   };
 
   return (
