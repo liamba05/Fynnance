@@ -149,3 +149,39 @@ class UserDataCollection:
         self.db.collection('users').document(user_id).set({
             'creditScore': credit_score
         }, merge=True)
+
+    def set_first_name(self, first_name: str) -> None:
+        """Set user's first name."""
+        if not first_name or not first_name.strip():
+            raise ValueError("First name cannot be empty")
+        user_id = self._get_current_user_id()
+        self.db.collection('users').document(user_id).set({
+            'firstName': first_name
+        }, merge=True)
+
+    def set_last_name(self, last_name: str) -> None:
+        """Set user's last name."""
+        if not last_name or not last_name.strip():
+            raise ValueError("Last name cannot be empty")
+        user_id = self._get_current_user_id()
+        self.db.collection('users').document(user_id).set({
+            'lastName': last_name
+        }, merge=True)
+
+    def set_email(self, email: str) -> None:
+        """Set user's email."""
+        if not email or '@' not in email:
+            raise ValueError("Invalid email format")
+        user_id = self._get_current_user_id()
+        self.db.collection('users').document(user_id).set({
+            'email': email
+        }, merge=True)
+
+    def set_date_of_birth(self, dob: date) -> None:
+        """Set user's date of birth."""
+        if not isinstance(dob, date):
+            raise ValueError("Date of birth must be a date object")
+        user_id = self._get_current_user_id()
+        self.db.collection('users').document(user_id).set({
+            'date_of_birth': dob
+        }, merge=True)
