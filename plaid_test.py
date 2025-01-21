@@ -23,8 +23,8 @@ class PlaidService:
         configuration = Configuration(
             host="https://sandbox.plaid.com",
             api_key={
-                'clientId': '678953cb559345002587ec7e',
-                'secret': '1dc05827da8670928df83473315054'
+                'clientId': 'a',
+                'secret': 'a'
             }
         )
         return plaid_api.PlaidApi(ApiClient(configuration))
