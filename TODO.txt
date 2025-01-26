@@ -1,5 +1,9 @@
 - add plaid integration in plaidServices.txt
     - fix plaid button and add business logic
-- need to integrate firebase and ensure that there is proper communciaton happening
+- Finish end to end communication:
+    - need to integrate firebase and ensure that there is proper communciaton happening
     - once this is done need to update business logic so the button send the information to the database
-    - add sign in with google button 
+    - add sign in with google button
+    - finish chat streaming end to end
+- Welcome chat visual should only go away when a message is first sent (not when a message is first typed)
+- When there are no messages in the chat, the first chats should populate at the top of the screen before filling in towards the bottom of the screen
