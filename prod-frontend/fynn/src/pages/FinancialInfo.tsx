@@ -34,16 +34,15 @@ function FinancialInfo() {
 
   const handleSubmit = () => {
     navigate("/goals");
-    console.log(formData);
   };
 
   const handleSkip = () => {
     navigate("/goals");
   };
 
-  const handlePlaidConnect = () => {
-    initializePlaid().catch(console.error);
-  };
+  // const handlePlaidConnect = () => {
+  //   initializePlaid().catch(console.error);
+  // };
 
   return (
     <div className={styles.financialInfo}>
@@ -120,7 +119,7 @@ function FinancialInfo() {
               id="plaidButton"
               variant="contained"
               startIcon={<AccountBalanceIcon />}
-              onClick={handlePlaidConnect}
+              // onClick={handlePlaidConnect}
               className={styles.plaidButton}
               sx={{
                 background: "#9fdb95",
