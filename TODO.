@@ -1,0 +1,5 @@
+- add plaid integration in plaidServices.txt
+    - fix plaid button and add business logic
+- need to integrate firebase and ensure that there is proper communciaton happening
+    - once this is done need to update business logic so the button send the information to the database
+    - add sign in with google button 
