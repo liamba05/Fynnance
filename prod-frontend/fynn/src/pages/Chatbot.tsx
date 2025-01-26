@@ -18,6 +18,8 @@ export const maxDuration = 30;
 
 export const runtime = 'edge';
 
+/// TODO: 
+// need to confirm that streaming works in this file, and displays correctly
 function Chatbot() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
