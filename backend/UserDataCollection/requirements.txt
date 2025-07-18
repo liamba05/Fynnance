@@ -1,5 +1,0 @@
-flask
-flask-cors
-firebase-admin
-plaid-python
-openai 
