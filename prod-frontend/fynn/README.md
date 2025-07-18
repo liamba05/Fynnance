@@ -1,11 +1,44 @@
-# React + TypeScript + Vite
+# Fynn Financial Assistant
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Fynn is a financial assistant application that helps users with budgeting, investments, and financial planning.
 
-Currently, two official plugins are available:
+## Quick Start Guide
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Follow these steps to run the application locally:
+
+### 1. Start the Frontend
+
+```bash
+# Navigate to the frontend directory
+cd /Users/liambouayad/Documents/GitHub/Fynn/prod-frontend/fynn
+
+# Install dependencies (first time only)
+npm install
+
+# Start the development server
+npm run dev
+```
+
+The frontend will be available at: `http://localhost:5173`
+
+### 2. Start the Backend (Python API)
+
+```bash
+# Navigate to the backend directory
+cd /Users/liambouayad/Documents/GitHub/Fynn/backend
+
+# Create and activate virtual environment (first time only)
+python -m venv env
+source env/bin/activate  # On Windows: env\Scripts\activate
+
+# Install dependencies (first time only)
+pip install -r requirements.txt
+
+# Start the backend server
+python UserDataCollection/run_api.py
+```
+
+The backend API will be available at: `http://localhost:5002`
 
 ## Expanding the ESLint configuration
 

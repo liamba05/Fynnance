@@ -9,6 +9,13 @@
   text-align: left;
   width: 100%;
 }
+
+.errorMessage {
+  color: #f44336;
+  font-size: 14px;
+  margin-top: 5px;
+  width: 100%;
+}
 .fynnLoginWrapper {
   color: #000;
   font-family: Kantumruy;

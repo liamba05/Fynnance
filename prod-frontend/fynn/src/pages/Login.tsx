@@ -8,28 +8,63 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import googleLogo from '../assets/googlelogo9808-1@2x.png';
 import fynnLogo from '../assets/fynn-100-x-100-px-rectangle-sticker-portrait-2@3x.png';
+import { auth } from "../config";
+import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 
 function Login() {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
+    setError("");
   }
 
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPassword(e.target.value);
+    setError("");
   }
 
-  const handleSubmit = () => {
-    // TODO: handle submit
-    navigate("/chatbot");
-    console.log(email, password);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError("");
+    
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      // Store a dummy token for now (in a real app, you'd get this from Firebase)
+      localStorage.setItem('authToken', 'dummy-token-value');
+      navigate("/chatbot");
+    } catch (error: any) {
+      console.error("Login error:", error);
+      setError(error.message || "Failed to log in");
+    } finally {
+      setIsLoading(false);
+    }
   }
 
+  const handleGoogleSignIn = async () => {
+    setIsLoading(true);
+    setError("");
+    
+    try {
+      const provider = new GoogleAuthProvider();
+      await signInWithPopup(auth, provider);
+      // Store a dummy token for now
+      localStorage.setItem('authToken', 'dummy-token-value');
+      navigate("/chatbot");
+    } catch (error: any) {
+      console.error("Google login error:", error);
+      setError(error.message || "Failed to log in with Google");
+    } finally {
+      setIsLoading(false);
+    }
+  }
  
   const onSignUpTextClick = useCallback(() => {
     navigate("/register");
@@ -57,7 +92,7 @@ function Login() {
       <section className={styles.loginPopUpWrapper}>
         <div className={styles.loginPopUp}>
           <h1 className={styles.fynnLogin}>Login</h1>
-          <form className={styles.frameGroup}>
+          <form className={styles.frameGroup} onSubmit={handleSubmit}>
             <div className={styles.inputArea}>
               <FieldLabels 
                 email="email" 
@@ -83,10 +118,13 @@ function Login() {
                 }}
                 change={handlePasswordChange}
               />
+              {error && <div className={styles.errorMessage}>{error}</div>}
             </div>
             <Button
+              type="submit"
               fullWidth
               variant="contained"
+              disabled={isLoading}
               sx={{
                 background: "rgba(151, 229, 139, 0.77)",
                 borderRadius: "20px",
@@ -96,7 +134,7 @@ function Login() {
                 "&:hover": { background: "rgba(151, 229, 139, 0.85)" },
               }}
             >
-              Log in
+              {isLoading ? "Loading..." : "Log in"}
             </Button>
             <div className={styles.divider}>
               <div className={styles.line} />
@@ -106,7 +144,7 @@ function Login() {
             <Button
               fullWidth
               variant="outlined"
-              startIcon={<img src={googleLogo} width="20" />}
+              startIcon={<img src={googleLogo} width="20" alt="Google" />}
               sx={{
                 borderRadius: "20px",
                 textTransform: "none",
@@ -114,7 +152,8 @@ function Login() {
                 color: "#000",
                 "&:hover": { background: "#f5f5f5" },
               }}
-              onClick={handleSubmit}
+              onClick={handleGoogleSignIn}
+              disabled={isLoading}
             >
               Continue with Google
             </Button>

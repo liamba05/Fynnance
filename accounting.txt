@@ -1,3 +1,0 @@
-Amount | Who paid  | Purchase
-$10.90 | Sebastian | Domain
-$0.00  | Liam      | Rentcast -- 50 API calls a month, $0.20 per call over 50

@@ -13,33 +13,43 @@ import Fynn100X100PxRectangle from "../components/Fynn100X100PxRectangle";
 import fynnLogo from '../assets/fynn-100-x-100-px-rectangle-sticker-portrait-2@3x.png';
 import { useChat } from 'ai/react';
 import { backendApiPreface } from '../App.tsx';
+import { useNavigate } from "react-router-dom";
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 30;
 
 export const runtime = 'edge';
 
-/// TODO: 
-// need to confirm that streaming works in this file, and displays correctly
+/// This component renders the main chat interface
 function Chatbot() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [menuText, setMenuText] = useState("Menu");
   const [showWelcome, setShowWelcome] = useState(true);
+  const navigate = useNavigate();
+
+  // Check for authentication
+  useEffect(() => {
+    const authToken = localStorage.getItem('authToken');
+    if (!authToken) {
+      navigate('/login');
+    }
+  }, [navigate]);
 
   const { messages, input, handleInputChange, handleSubmit, setMessages, isLoading } = useChat({
-    api: `${backendApiPreface}/api/stream_gpt_response`,
+    // Using Vercel AI SDK for chat functionality
+    api: '/api/chat', // Use local endpoint for development
     headers: {
-      'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+      'Authorization': `Bearer ${localStorage.getItem('authToken') || 'dummy-token'}`,
       'Content-Type': 'application/json',
     },
     body: {
-      // Additional body parameters if needed
+      // Pass user ID or other info needed by the backend
+      userId: localStorage.getItem('userId') || 'anonymous'
     },
     onResponse: (response: Response) => {
       if (response.status === 401) {
         console.error('Authentication failed');
-        // Optionally redirect to login
-        window.location.href = '/login';
+        navigate('/login');
         return;
       }
       if (response.status === 429) {
@@ -49,11 +59,16 @@ function Chatbot() {
     },
     onError: (error: any) => {
       console.error('Chat error:', error);
-      // Handle error appropriately
+      // Fallback to use local endpoint
+      alert("Error connecting to the server. Please try again later.");
     },
     onFinish: (message: any) => {
-      console.log(message);
+      console.log('Message completed:', message);
       scrollToBottom();
+      // Hide welcome screen once a message is sent/received
+      if (showWelcome) {
+        setShowWelcome(false);
+      }
     },
   });
 
@@ -177,17 +192,27 @@ function Chatbot() {
         {/* Message Input */}
         <form 
           onClick={() => setShowWelcome(false)}
-          onSubmit={handleSubmit} 
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (input.trim()) {
+              handleSubmit(e);
+            }
+          }} 
           className={styles.messageForm}
         >
           <input
             type="text"
             value={input}
             onChange={handleInputChange}
-            placeholder="Type Message"
+            placeholder="Type a message..."
             className={styles.messageInput}
+            disabled={isLoading}
           />
-          <IconButton type="submit" className={styles.sendButton}>
+          <IconButton 
+            type="submit" 
+            className={styles.sendButton}
+            disabled={isLoading || !input.trim()}
+          >
             <SendIcon />
           </IconButton>
         </form>
